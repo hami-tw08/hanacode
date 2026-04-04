@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>花コード 暗記トレーナー</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf6f0;--surface:#fff;--surface2:#f5ede0;--accent:#7c4f2a;--accent2:#c8893a;
+  --accent-light:#f0d9b5;--text:#2a1a0a;--text-sub:#7a5c3a;
+  --correct:#2d7a4f;--wrong:#9c2a2a;--border:#d4b896;--shadow:rgba(100,60,20,.13);
+  --num-bg:#fdf8f0;--num-border:#c8a870;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+
+/* ── ヘッダー ── */
+.hdr{width:100%;background:var(--accent);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.hdr-title{font-family:'Shippori Mincho',serif;font-size:1rem;font-weight:700;color:#fff8ee;
+  white-space:nowrap;letter-spacing:.08em}
+.prog-wrap{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.prog-bg{flex:1;height:6px;background:rgba(255,255,255,.22);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--accent2);border-radius:3px;transition:width .4s ease}
+.prog-txt{font-size:.72rem;color:#f5d9a8;white-space:nowrap;font-family:'DM Mono',monospace}
+
+/* フィルターバー */
+.filter-bar{width:100%;max-width:480px;display:flex;gap:6px;padding:10px 14px 0}
+.filter-btn{flex:1;padding:7px 4px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--num-bg);font-family:'Noto Serif JP',serif;font-size:.78rem;
+  color:var(--text-sub);cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.filter-btn.active{background:var(--accent);color:#fff8ee;border-color:var(--accent)}
+.filter-btn:hover:not(.active){background:var(--accent-light)}
+
+/* メイン */
+.main{width:100%;max-width:480px;display:flex;flex-direction:column;flex:1}
+#sq{display:flex;flex-direction:column;flex:1}
+#sr{display:none;flex-direction:column;flex:1}
+
+/* 花カード */
+.flower-card{background:var(--surface);margin:10px 14px 0;border-radius:16px;
+  border:1.5px solid var(--border);overflow:hidden;box-shadow:0 4px 20px var(--shadow)}
+.flower-img{width:100%;height:180px;background:var(--surface2);display:flex;
+  align-items:center;justify-content:center;overflow:hidden}
+.flower-img svg{width:100%;height:100%}
+.flower-info{padding:10px 18px 12px;text-align:center;border-top:1px solid var(--accent-light)}
+.flower-name{font-family:'Shippori Mincho',serif;font-size:1.45rem;font-weight:700;
+  color:var(--accent);letter-spacing:.08em;line-height:1.3}
+.flower-cat{display:inline-block;margin-top:5px;font-size:.68rem;background:var(--accent-light);
+  color:var(--accent);padding:2px 10px;border-radius:99px;font-weight:600;letter-spacing:.04em}
+
+/* 入力エリア */
+.input-area{margin:10px 14px 0;display:flex;gap:8px;align-items:stretch}
+.input-disp{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:12px;
+  font-family:'DM Mono',monospace;font-size:1.9rem;font-weight:500;color:var(--accent);
+  text-align:center;padding:8px 10px;letter-spacing:.25em;min-height:60px;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s;box-shadow:inset 0 2px 8px rgba(100,60,20,.06)}
+.input-disp.has-val{border-color:var(--accent2)}
+.cursor{display:inline-block;width:2px;height:1.25em;background:var(--accent);
+  margin-left:2px;animation:blink 1s step-end infinite;vertical-align:middle}
+@keyframes blink{50%{opacity:0}}
+.btn-ans{background:var(--accent);color:#fff8ee;border:none;border-radius:12px;
+  font-family:'Noto Serif JP',serif;font-size:.95rem;font-weight:600;padding:0 18px;
+  cursor:pointer;letter-spacing:.06em;transition:background .15s,transform .1s;white-space:nowrap}
+.btn-ans:active{transform:scale(.95)}.btn-ans:hover{background:#5a3510}
+.btn-ans:disabled{background:var(--border);cursor:default}
+
+/* テンキー */
+.numpad{margin:8px 14px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.num{background:var(--num-bg);border:1.5px solid var(--num-border);border-radius:12px;
+  font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;color:var(--text);
+  padding:13px 0;cursor:pointer;transition:background .1s,transform .08s;
+  box-shadow:0 2px 6px var(--shadow);text-align:center;user-select:none}
+.num:active{transform:scale(.92);background:var(--accent-light)}
+.num:hover{background:var(--accent-light)}
+.num.zero{grid-column:1/3}
+.num.del{background:#fde8e8;border-color:#e0a0a0;color:var(--wrong);font-size:1.05rem}
+.num.del:hover{background:#fbd0d0}
+
+/* 結果画面 */
+.result-card{margin:10px 14px 0;border-radius:16px;overflow:hidden;border:1.5px solid var(--border);
+  box-shadow:0 4px 20px var(--shadow);flex:1;display:flex;flex-direction:column}
+.result-top{padding:20px 20px 16px;display:flex;flex-direction:column;align-items:center;
+  gap:10px;background:var(--surface);flex:1}
+.result-badge{font-size:2.8rem;line-height:1}
+.result-label{font-family:'Shippori Mincho',serif;font-size:1.7rem;font-weight:700;letter-spacing:.12em}
+.result-label.ok{color:var(--correct)}.result-label.ng{color:var(--wrong)}
+.result-img{width:120px;height:120px;border-radius:12px;overflow:hidden;
+  border:2px solid var(--border);background:var(--surface2);
+  display:flex;align-items:center;justify-content:center}
+.result-img svg{width:100%;height:100%}
+.result-detail{text-align:center;line-height:1.85}
+.r-name{font-family:'Shippori Mincho',serif;font-size:1.35rem;font-weight:700;color:var(--accent)}
+.r-code{font-family:'DM Mono',monospace;font-size:1.25rem;color:var(--correct);font-weight:600}
+.r-ans-ng{font-family:'DM Mono',monospace;font-size:1.05rem;color:var(--wrong)}
+.r-correct-code{font-family:'DM Mono',monospace;font-size:1.65rem;font-weight:700;color:var(--wrong)}
+.score-bar{background:var(--surface2);border-top:1px solid var(--border);
+  padding:9px 20px;display:flex;justify-content:space-between;
+  font-size:.8rem;color:var(--text-sub);font-family:'DM Mono',monospace}
+.sc-ok{color:var(--correct);font-weight:700}.sc-ng{color:var(--wrong);font-weight:700}
+.btn-next{margin:8px 14px 14px;display:block;width:calc(100% - 28px);padding:15px;
+  background:var(--accent);color:#fff8ee;border:none;border-radius:12px;
+  font-family:'Shippori Mincho',serif;font-size:1.05rem;font-weight:700;letter-spacing:.12em;
+  cursor:pointer;transition:background .15s,transform .1s;box-shadow:0 4px 12px var(--shadow)}
+.btn-next:hover{background:#5a3510}.btn-next:active{transform:scale(.97)}
+
+/* 完了画面 */
+#sd{display:none;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;padding:40px 20px;text-align:center;gap:14px}
+.done-em{font-size:3.8rem}
+.done-title{font-family:'Shippori Mincho',serif;font-size:1.7rem;font-weight:700;
+  color:var(--accent);letter-spacing:.1em}
+.done-score{font-family:'DM Mono',monospace;font-size:1.1rem;color:var(--text-sub)}
+.btn-restart{margin-top:8px;padding:13px 36px;background:var(--accent);color:#fff8ee;
+  border:none;border-radius:12px;font-family:'Shippori Mincho',serif;font-size:1.05rem;
+  font-weight:700;letter-spacing:.1em;cursor:pointer;transition:background .15s}
+.btn-restart:hover{background:#5a3510}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">🌸 花コード暗記</div>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="pf" style="width:0%"></div></div>
+    <div class="prog-txt" id="pt">0/0</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" id="fb-all"   onclick="setFilter('all')">全て (190)</button>
+  <button class="filter-btn"        id="fb-kiri"  onclick="setFilter('切り花')">切り花 (130)</button>
+  <button class="filter-btn"        id="fb-hachi" onclick="setFilter('鉢物')">鉢物 (60)</button>
+</div>
+
+<div class="main">
+
+  <!-- 問題画面 -->
+  <div id="sq">
+    <div class="flower-card">
+      <div class="flower-img" id="img-wrap"></div>
+      <div class="flower-info">
+        <div class="flower-name" id="fn">—</div>
+        <span class="flower-cat"  id="fc"></span>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="input-disp" id="id"><span class="cursor"></span></div>
+      <button class="btn-ans" id="ba" onclick="checkAns()" disabled>回答</button>
+    </div>
+    <div class="numpad">
+      <button class="num" onclick="pn('7')">7</button>
+      <button class="num" onclick="pn('8')">8</button>
+      <button class="num" onclick="pn('9')">9</button>
+      <button class="num" onclick="pn('4')">4</button>
+      <button class="num" onclick="pn('5')">5</button>
+      <button class="num" onclick="pn('6')">6</button>
+      <button class="num" onclick="pn('1')">1</button>
+      <button class="num" onclick="pn('2')">2</button>
+      <button class="num" onclick="pn('3')">3</button>
+      <button class="num zero" onclick="pn('0')">0</button>
+      <button class="num del"  onclick="pb()">⌫</button>
+    </div>
+  </div>
+
+  <!-- 結果画面 -->
+  <div id="sr">
+    <div class="result-card">
+      <div class="result-top">
+        <div class="result-badge" id="rb"></div>
+        <div class="result-label" id="rl"></div>
+        <div class="result-img" id="ri"></div>
+        <div class="result-detail" id="rd"></div>
+      </div>
+      <div class="score-bar">
+        <span>正解 <span class="sc-ok" id="sok">0</span></span>
+        <span>不正解 <span class="sc-ng" id="sng">0</span></span>
+        <span>計 <span id="stot">0</span></span>
+      </div>
+    </div>
+    <button class="btn-next" onclick="nextQ()">次へ →</button>
+  </div>
+
+  <!-- 完了画面 -->
+  <div id="sd">
+    <div class="done-em">🎉</div>
+    <div class="done-title">全問完了！</div>
+    <div class="done-score" id="ds"></div>
+    <button class="btn-restart" onclick="startQuiz()">もう一度</button>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// =====================================================================
+// SVG イラスト（花の種類別・アプリ内蔵）
+// =====================================================================
+const S = {};
+// バラ
+S.bara=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/><line x1="100" y1="195" x2="100" y2="115" stroke="#3a6e1a" stroke-width="4"/><line x1="100" y1="158" x2="76" y2="146" stroke="#3a6e1a" stroke-width="2"/><ellipse cx="66" cy="141" rx="16" ry="9" fill="#4a8a2a" transform="rotate(-30,66,141)"/><line x1="100" y1="143" x2="124" y2="131" stroke="#3a6e1a" stroke-width="2"/><ellipse cx="132" cy="126" rx="16" ry="9" fill="#4a8a2a" transform="rotate(30,132,126)"/><path d="M100,40 C80,40 62,55 62,75 C62,90 70,100 80,107 C86,111 94,113 100,113 C106,113 114,111 120,107 C130,100 138,90 138,75 C138,55 120,40 100,40Z" fill="#e83358"/><path d="M100,50 C88,55 78,65 78,78 C78,90 86,100 100,105 C114,100 122,90 122,78 C122,65 112,55 100,50Z" fill="#cc2244"/><path d="M100,62 C92,68 87,77 87,85 C87,94 93,102 100,105 C107,102 113,94 113,85 C113,77 108,68 100,62Z" fill="#aa1133"/><ellipse cx="100" cy="91" rx="9" ry="7" fill="#881122"/><path d="M75,69 C65,56 62,46 70,39 C78,32 88,41 92,51" fill="#cc3355" opacity=".6"/><path d="M125,69 C135,56 138,46 130,39 C122,32 112,41 108,51" fill="#cc3355" opacity=".6"/></svg>`;
+// カーネーション
+S.carnation=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/><line x1="100" y1="195" x2="100" y2="112" stroke="#4a7a2a" stroke-width="3"/><ellipse cx="76" cy="165" rx="22" ry="8" fill="#5a8a3a" transform="rotate(-20,76,165)"/><ellipse cx="124" cy="149" rx="22" ry="8" fill="#5a8a3a" transform="rotate(20,124,149)"/><g transform="translate(100,80)"><path d="M0,-40 C-8,-38-15,-30-14,-22 C-13,-14-6,-10 0,-10 C6,-10 13,-14 14,-22 C15,-30 8,-38 0,-40Z" fill="#ff6688"/><path d="M-18,-32 C-26,-28-30,-18-26,-10 C-22,-3-14,0-8,2" fill="#ff7799" opacity=".85"/><path d="M18,-32 C26,-28 30,-18 26,-10 C22,-3 14,0 8,2" fill="#ff7799" opacity=".85"/><path d="M-24,-14 C-30,-6-28,4-20,10 C-14,14-6,14 0,12" fill="#ff88aa" opacity=".85"/><path d="M24,-14 C30,-6 28,4 20,10 C14,14 6,14 0,12" fill="#ff88aa" opacity=".85"/><path d="M-16,6 C-18,14-12,22-4,24 C2,26 8,24 12,18" fill="#ffaabb" opacity=".8"/><path d="M16,6 C18,14 12,22 4,24 C-2,26-8,24-12,18" fill="#ffaabb" opacity=".8"/></g></svg>`;
+// 菊（白）
+S.shirokiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f8ff"/><line x1="100" y1="195" x2="100" y2="112" stroke="#5a8c3a" stroke-width="3"/><ellipse cx="78" cy="163" rx="22" ry="9" fill="#6aaa44" transform="rotate(-25,78,163)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(22.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(45)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(67.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(90)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(112.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(135)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(157.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(180)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(202.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(225)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(247.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(270)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(292.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(315)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(337.5)"/><circle r="14" fill="#f5d800"/></g></svg>`;
+// 菊（黄）
+S.kikiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/><line x1="100" y1="195" x2="100" y2="112" stroke="#5a8c3a" stroke-width="3"/><ellipse cx="78" cy="163" rx="22" ry="9" fill="#6aaa44" transform="rotate(-25,78,163)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(22.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(45)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(67.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(90)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(112.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(135)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(157.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(180)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(202.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(225)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(247.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(270)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(292.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(315)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ffe033" transform="rotate(337.5)"/><circle r="14" fill="#f5a800"/></g></svg>`;
+// 菊（赤）
+S.akagiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/><line x1="100" y1="195" x2="100" y2="112" stroke="#5a8c3a" stroke-width="3"/><ellipse cx="78" cy="163" rx="22" ry="9" fill="#6aaa44" transform="rotate(-25,78,163)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(22.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(45)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(67.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(90)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(112.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(135)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(157.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(180)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(202.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(225)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(247.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(270)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(292.5)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(315)"/><ellipse cx="0" cy="-30" rx="5.5" ry="16" fill="#ee3344" transform="rotate(337.5)"/><circle r="14" fill="#cc1122"/></g></svg>`;
+// ユリ（白）
+S.yuri_w=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/><line x1="100" y1="195" x2="100" y2="62" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="76" cy="156" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,76,156)"/><ellipse cx="124" cy="132" rx="24" ry="9" fill="#5aaa3a" transform="rotate(20,124,132)"/><g transform="translate(100,92)"><path d="M0,-50 C-5,-40-10,-20-8,2 C-6,18-2,26 0,30 C2,26 6,18 8,2 C10,-20 5,-40 0,-50Z" fill="white" stroke="#ddd" stroke-width="1"/><path d="M0,-50 C-20,-38-30,-18-26,2 C-22,18-12,26 0,30" fill="white" stroke="#ddd" stroke-width="1" opacity=".9"/><path d="M0,-50 C20,-38 30,-18 26,2 C22,18 12,26 0,30" fill="white" stroke="#ddd" stroke-width="1" opacity=".9"/><path d="M0,-50 C-33,-32-38,-10-30,12 C-24,26-12,32 0,30" fill="white" stroke="#ddd" stroke-width="1" opacity=".8"/><path d="M0,-50 C33,-32 38,-10 30,12 C24,26 12,32 0,30" fill="white" stroke="#ddd" stroke-width="1" opacity=".8"/><line x1="-8" y1="-18" x2="-14" y2="-3" stroke="#f5a000" stroke-width="1.5"/><line x1="0" y1="-16" x2="0" y2="-1" stroke="#f5a000" stroke-width="1.5"/><line x1="8" y1="-18" x2="14" y2="-3" stroke="#f5a000" stroke-width="1.5"/><circle cx="-14" cy="-3" r="3" fill="#f5a000"/><circle cy="-1" r="3" fill="#f5a000"/><circle cx="14" cy="-3" r="3" fill="#f5a000"/></g></svg>`;
+// ユリ（ピンク）
+S.yuri_p=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/><line x1="100" y1="195" x2="100" y2="62" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="76" cy="156" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,76,156)"/><g transform="translate(100,92)"><path d="M0,-50 C-5,-40-10,-20-8,2 C-6,18-2,26 0,30 C2,26 6,18 8,2 C10,-20 5,-40 0,-50Z" fill="#ffccdd" stroke="#eebb" stroke-width="1"/><path d="M0,-50 C-20,-38-30,-18-26,2 C-22,18-12,26 0,30" fill="#ffccdd" opacity=".9"/><path d="M0,-50 C20,-38 30,-18 26,2 C22,18 12,26 0,30" fill="#ffccdd" opacity=".9"/><path d="M0,-50 C-33,-32-38,-10-30,12 C-24,26-12,32 0,30" fill="#ffccdd" opacity=".8"/><path d="M0,-50 C33,-32 38,-10 30,12 C24,26 12,32 0,30" fill="#ffccdd" opacity=".8"/><path d="M-12,-26 C-8,-18-6,-8-6,0 C-6,8-4,14 0,18" stroke="#cc2255" stroke-width="1.5" fill="none" opacity=".5"/><path d="M12,-26 C8,-18 6,-8 6,0 C6,8 4,14 0,18" stroke="#cc2255" stroke-width="1.5" fill="none" opacity=".5"/><line x1="-8" y1="-18" x2="-16" y2="-2" stroke="#888" stroke-width="1.5"/><line x1="0" y1="-16" x2="0" y2="1" stroke="#888" stroke-width="1.5"/><line x1="8" y1="-18" x2="16" y2="-2" stroke="#888" stroke-width="1.5"/><circle cx="-16" cy="-2" r="3.5" fill="#7a6000"/><circle cy="1" r="3.5" fill="#7a6000"/><circle cx="16" cy="-2" r="3.5" fill="#7a6000"/></g></svg>`;
+// ユリ（オレンジ）
+S.yuri_o=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/><line x1="100" y1="195" x2="100" y2="62" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="76" cy="156" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,76,156)"/><g transform="translate(100,92)"><path d="M0,-50 C-5,-40-10,-20-8,2 C-6,18-2,26 0,30" fill="#ff8833"/><path d="M0,-50 C5,-40 10,-20 8,2 C6,18 2,26 0,30" fill="#ff7722"/><path d="M0,-50 C-22,-38-30,-18-26,2" fill="#ff9944"/><path d="M0,-50 C22,-38 30,-18 26,2" fill="#ff9944"/><path d="M0,-50 C-35,-28-38,-8-30,10" fill="#ffaa55"/><path d="M0,-50 C35,-28 38,-8 30,10" fill="#ffaa55"/><circle cx="-10" cy="-14" r="3" fill="#4a2800"/><circle cy="-11" r="3" fill="#4a2800"/><circle cx="10" cy="-14" r="3" fill="#4a2800"/></g></svg>`;
+// チューリップ
+S.tulip=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/><line x1="100" y1="195" x2="100" y2="116" stroke="#4a8a2a" stroke-width="4"/><path d="M60,156 C55,141 58,126 70,119 C80,113 90,116 100,116" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="52" cy="161" rx="22" ry="10" fill="#5aaa3a" transform="rotate(-30,52,161)"/><path d="M140,146 C145,131 142,116 130,109 C120,103 110,106 100,116" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="148" cy="151" rx="22" ry="10" fill="#5aaa3a" transform="rotate(30,148,151)"/><path d="M72,116 C68,96 70,73 80,59 C88,48 96,43 100,43 C104,43 112,48 120,59 C130,73 132,96 128,116Z" fill="#ff4455"/><path d="M72,116 C75,96 80,73 88,59 C94,49 98,44 100,43 C100,43 100,71 100,116Z" fill="#cc2233"/><path d="M128,116 C125,96 120,73 112,59 C106,49 102,44 100,43 C100,43 100,71 100,116Z" fill="#dd3344"/></svg>`;
+// ラン（胡蝶蘭）
+S.ran_phala=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff9fe"/><line x1="100" y1="130" x2="100" y2="50" stroke="#5a8c3a" stroke-width="2.5"/><g transform="translate(80,112)"><ellipse cx="0" cy="0" rx="22" ry="14" fill="white" stroke="#ddd" stroke-width="1"/><ellipse cx="0" cy="0" rx="22" ry="14" fill="white" transform="rotate(90)"/><ellipse cx="0" cy="5" rx="8" ry="6" fill="#ff88cc"/><circle cx="0" cy="1" r="4" fill="#ffdd44"/></g><g transform="translate(122,97)"><ellipse cx="0" cy="0" rx="21" ry="13" fill="white" stroke="#ddd" stroke-width="1"/><ellipse cx="0" cy="0" rx="21" ry="13" fill="white" transform="rotate(90)"/><ellipse cx="0" cy="5" rx="7" ry="5" fill="#ff88cc"/><circle cx="0" cy="1" r="3.5" fill="#ffdd44"/></g><g transform="translate(78,77)"><ellipse cx="0" cy="0" rx="20" ry="13" fill="white" stroke="#ddd" stroke-width="1"/><ellipse cx="0" cy="0" rx="20" ry="13" fill="white" transform="rotate(90)"/><ellipse cx="0" cy="5" rx="7" ry="5" fill="#ff99dd"/><circle cx="0" cy="1" r="3.5" fill="#ffdd44"/></g></svg>`;
+// ラン（カトレア）
+S.ran_cat=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fdf0ff"/><rect x="94" y="120" width="12" height="72" rx="4" fill="#5a8c3a"/><g transform="translate(100,90)"><ellipse cx="0" cy="-35" rx="22" ry="38" fill="#cc88ee" opacity=".9"/><ellipse cx="-38" cy="5" rx="18" ry="32" fill="#cc88ee" opacity=".9" transform="rotate(-40)"/><ellipse cx="38" cy="5" rx="18" ry="32" fill="#cc88ee" opacity=".9" transform="rotate(40)"/><ellipse cx="-30" cy="28" rx="16" ry="28" fill="#dd99ff" opacity=".85" transform="rotate(15)"/><ellipse cx="30" cy="28" rx="16" ry="28" fill="#dd99ff" opacity=".85" transform="rotate(-15)"/><ellipse cx="0" cy="13" rx="18" ry="22" fill="#ff99dd"/><ellipse cx="0" cy="17" rx="12" ry="10" fill="#ffaaee"/><circle cx="0" cy="9" r="5" fill="#ffdd44"/></g></svg>`;
+// ラン（デンドロ系）
+S.ran_dendro=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/><line x1="100" y1="195" x2="100" y2="50" stroke="#5a8c3a" stroke-width="3"/><g transform="translate(82,162)"><ellipse rx="12" ry="17" fill="#ff99cc" transform="rotate(-15)"/><circle r="4" fill="#ffee44"/></g><g transform="translate(118,150)"><ellipse rx="12" ry="17" fill="#ff99cc" transform="rotate(15)"/><circle r="4" fill="#ffee44"/></g><g transform="translate(80,127)"><ellipse rx="12" ry="17" fill="#ff88bb" transform="rotate(-15)"/><circle r="4" fill="#ffee44"/></g><g transform="translate(120,115)"><ellipse rx="12" ry="17" fill="#ff88bb" transform="rotate(15)"/><circle r="4" fill="#ffee44"/></g><g transform="translate(82,92)"><ellipse rx="11" ry="15" fill="#ee77aa" transform="rotate(-15)"/><circle r="4" fill="#ffee44"/></g><g transform="translate(118,80)"><ellipse rx="11" ry="15" fill="#ee77aa" transform="rotate(15)"/><circle r="4" fill="#ffee44"/></g></svg>`;
+// ラン（オンシジューム）
+S.ran_onshi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffbe8"/><ellipse cx="100" cy="145" rx="6" ry="48" fill="#6aaa44"/><g transform="translate(100,92)"><ellipse cx="-32" cy="-8" rx="28" ry="13" fill="#f9d84a" transform="rotate(-30)"/><ellipse cx="32" cy="-8" rx="28" ry="13" fill="#f9d84a" transform="rotate(30)"/><ellipse cx="0" cy="-37" rx="13" ry="25" fill="#f9d84a"/><ellipse cx="-27" cy="18" rx="21" ry="10" fill="#f0b830" transform="rotate(20)"/><ellipse cx="27" cy="18" rx="21" ry="10" fill="#f0b830" transform="rotate(-20)"/><circle cx="0" cy="0" r="10" fill="#d44"/><ellipse cx="0" cy="6" rx="8" ry="5" fill="#a22"/></g><line x1="100" y1="145" x2="80" y2="105" stroke="#6aaa44" stroke-width="2"/><line x1="100" y1="132" x2="120" y2="97" stroke="#6aaa44" stroke-width="2"/></svg>`;
+// アイリス
+S.iris=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/><line x1="100" y1="195" x2="100" y2="92" stroke="#4a8a2a" stroke-width="4"/><ellipse cx="72" cy="162" rx="26" ry="9" fill="#5aaa3a" transform="rotate(-25,72,162)"/><g transform="translate(100,80)"><path d="M0,0 C-10,-5-22,-7-30,-4 C-38,-1-42,7-40,16 C-38,25-30,31-20,33 C-12,34-5,31 0,26" fill="#7733bb"/><path d="M0,0 C10,-5 22,-7 30,-4 C38,-1 42,7 40,16 C38,25 30,31 20,33 C12,34 5,31 0,26" fill="#7733bb"/><path d="M0,-54 C-4,-43-6,-29-4,-15 C-2,-5 0,0 0,0" fill="#9944dd"/><path d="M0,-54 C4,-43 6,-29 4,-15 C2,-5 0,0 0,0" fill="#9944dd"/><path d="M-27,6 C-19,3-11,5-5,9" stroke="#ffee88" stroke-width="2.5" fill="none"/><path d="M27,6 C19,3 11,5 5,9" stroke="#ffee88" stroke-width="2.5" fill="none"/><ellipse cx="0" cy="-29" rx="6" ry="14" fill="#bb66ee" opacity=".8"/></g></svg>`;
+// スイセン
+S.suisen=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff0"/><line x1="100" y1="195" x2="100" y2="102" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="164" rx="26" ry="9" fill="#5aaa3a" transform="rotate(-25,74,164)"/><g transform="translate(100,80)"><ellipse cx="0" cy="-30" rx="9" ry="20" fill="#fffaaa"/><ellipse cx="0" cy="-30" rx="9" ry="20" fill="#fffaaa" transform="rotate(60)"/><ellipse cx="0" cy="-30" rx="9" ry="20" fill="#fffaaa" transform="rotate(120)"/><ellipse cx="0" cy="-30" rx="9" ry="20" fill="#fffaaa" transform="rotate(180)"/><ellipse cx="0" cy="-30" rx="9" ry="20" fill="#fffaaa" transform="rotate(240)"/><ellipse cx="0" cy="-30" rx="9" ry="20" fill="#fffaaa" transform="rotate(300)"/><circle r="20" fill="#ff9900" opacity=".9"/><circle r="14" fill="#ffcc00"/><circle r="8" fill="#ff8800"/></g></svg>`;
+// チューリップ（黄）
+S.tulip_y=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/><line x1="100" y1="195" x2="100" y2="116" stroke="#4a8a2a" stroke-width="4"/><path d="M60,156 C55,141 58,126 70,119 C80,113 90,116 100,116" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="52" cy="161" rx="22" ry="10" fill="#5aaa3a" transform="rotate(-30,52,161)"/><path d="M140,146 C145,131 142,116 130,109 C120,103 110,106 100,116" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="148" cy="151" rx="22" ry="10" fill="#5aaa3a" transform="rotate(30,148,151)"/><path d="M72,116 C68,96 70,73 80,59 C88,48 96,43 100,43 C104,43 112,48 120,59 C130,73 132,96 128,116Z" fill="#ffdd00"/><path d="M72,116 C75,96 80,73 88,59 C94,49 98,44 100,43 C100,43 100,71 100,116Z" fill="#ddb800"/><path d="M128,116 C125,96 120,73 112,59 C106,49 102,44 100,43 C100,43 100,71 100,116Z" fill="#eec800"/></svg>`;
+// ガーベラ
+S.gerbera=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ee"/><line x1="100" y1="195" x2="100" y2="116" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="163" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-22,74,163)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(22.5)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(45)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(67.5)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(90)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(112.5)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(135)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(157.5)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(180)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(202.5)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(225)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(247.5)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(270)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(292.5)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(315)"/><ellipse cx="0" cy="-36" rx="6" ry="18" fill="#ff6633" transform="rotate(337.5)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(22.5)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(45)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(90)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(135)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(180)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(225)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(270)"/><ellipse cx="0" cy="-22" rx="4" ry="10" fill="#ff4400" transform="rotate(315)"/><circle r="14" fill="#222"/><circle r="8" fill="#333"/></g></svg>`;
+// ヒマワリ
+S.himawari=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffbe8"/><line x1="100" y1="195" x2="100" y2="121" stroke="#4a8a2a" stroke-width="4"/><ellipse cx="74" cy="166" rx="28" ry="10" fill="#5aaa3a" transform="rotate(-25,74,166)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(22.5)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(45)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(67.5)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(90)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(112.5)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(135)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(157.5)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(180)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(202.5)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(225)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(247.5)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(270)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(292.5)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(315)"/><ellipse cx="0" cy="-40" rx="10" ry="26" fill="#ffcc00" transform="rotate(337.5)"/><circle r="28" fill="#4a2800"/><circle r="22" fill="#5a3400"/></g></svg>`;
+// コスモス
+S.cosmos=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5ff"/><line x1="100" y1="195" x2="100" y2="112" stroke="#4a8a2a" stroke-width="2"/><ellipse cx="74" cy="166" rx="22" ry="8" fill="#5aaa3a" transform="rotate(-25,74,166)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb"/><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb" transform="rotate(45)"/><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb" transform="rotate(90)"/><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb" transform="rotate(135)"/><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb" transform="rotate(180)"/><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb" transform="rotate(225)"/><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb" transform="rotate(270)"/><ellipse cx="0" cy="-28" rx="9" ry="20" fill="#ff88bb" transform="rotate(315)"/><circle r="12" fill="#ffee44"/></g></svg>`;
+// マーガレット/白系
+S.margaret=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/><line x1="100" y1="195" x2="100" y2="115" stroke="#4a8a2a" stroke-width="2.5"/><ellipse cx="74" cy="166" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-22,74,166)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(22.5)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(45)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(67.5)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(90)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(112.5)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(135)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(157.5)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(180)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(202.5)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(225)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(247.5)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(270)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(292.5)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(315)"/><ellipse cx="0" cy="-30" rx="6" ry="18" fill="white" stroke="#ddd" stroke-width=".5" transform="rotate(337.5)"/><circle r="14" fill="#ffcc00"/></g></svg>`;
+// カラー
+S.kara=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5fff8"/><line x1="105" y1="195" x2="100" y2="110" stroke="#4a8a2a" stroke-width="4"/><ellipse cx="75" cy="166" rx="28" ry="12" fill="#5aaa3a" transform="rotate(-25,75,166)"/><path d="M80,110 C72,100 68,85 70,70 C72,55 80,44 90,38 C96,35 104,35 110,38 C120,44 128,55 130,70 C132,85 128,100 120,110 C114,118 108,122 105,125 C103,126 102,127 102,128 L98,128 C98,127 97,126 95,125 C92,122 86,118 80,110Z" fill="white" stroke="#ddd" stroke-width="1.5"/><line x1="100" y1="65" x2="100" y2="128" stroke="#f5cc00" stroke-width="4" stroke-linecap="round"/></svg>`;
+// アジサイ
+S.ajisai=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f4ff"/><line x1="100" y1="195" x2="100" y2="130" stroke="#4a8a2a" stroke-width="4"/><ellipse cx="72" cy="172" rx="28" ry="10" fill="#5aaa3a" transform="rotate(-20,72,172)"/><ellipse cx="128" cy="157" rx="28" ry="10" fill="#5aaa3a" transform="rotate(20,128,157)"/><g transform="translate(80,97)"><circle r="6" fill="#7799ee"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff" transform="rotate(90)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff" transform="rotate(180)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff" transform="rotate(270)"/></g><g transform="translate(100,82)"><circle r="6" fill="#6688dd"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#7799ee"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#7799ee" transform="rotate(90)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#7799ee" transform="rotate(180)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#7799ee" transform="rotate(270)"/></g><g transform="translate(120,97)"><circle r="6" fill="#7799ee"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff" transform="rotate(90)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff" transform="rotate(180)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#88aaff" transform="rotate(270)"/></g><g transform="translate(90,117)"><circle r="6" fill="#8899cc"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#9999dd"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#9999dd" transform="rotate(90)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#9999dd" transform="rotate(180)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#9999dd" transform="rotate(270)"/></g><g transform="translate(110,117)"><circle r="6" fill="#7788cc"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#8899dd"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#8899dd" transform="rotate(90)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#8899dd" transform="rotate(180)"/><ellipse cx="0" cy="-10" rx="6" ry="8" fill="#8899dd" transform="rotate(270)"/></g></svg>`;
+// サクラ
+S.sakura=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/><line x1="100" y1="195" x2="100" y2="110" stroke="#6a3a1a" stroke-width="5"/><path d="M100,110 C80,95 55,80 40,60" stroke="#6a3a1a" stroke-width="3" fill="none"/><path d="M100,110 C120,95 145,80 160,60" stroke="#6a3a1a" stroke-width="3" fill="none"/><g transform="translate(68,82)"><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10 C0,10 1,8 2,4 C4,-4 3,-11 0,-15Z" fill="#ffbbcc"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbcc" transform="rotate(72)"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbcc" transform="rotate(144)"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbcc" transform="rotate(216)"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbcc" transform="rotate(288)"/><circle r="5" fill="#ffee88"/></g><g transform="translate(100,62)"><path d="M0,-17 C-3,-13-4,-5-2,4 C-1,9 0,11 0,11" fill="#ffaacc"/><path d="M0,-17 C-3,-13-4,-5-2,4 C-1,9 0,11 0,11" fill="#ffaacc" transform="rotate(72)"/><path d="M0,-17 C-3,-13-4,-5-2,4 C-1,9 0,11 0,11" fill="#ffaacc" transform="rotate(144)"/><path d="M0,-17 C-3,-13-4,-5-2,4 C-1,9 0,11 0,11" fill="#ffaacc" transform="rotate(216)"/><path d="M0,-17 C-3,-13-4,-5-2,4 C-1,9 0,11 0,11" fill="#ffaacc" transform="rotate(288)"/><circle r="5" fill="#ffee88"/></g><g transform="translate(132,82)"><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbdd"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbdd" transform="rotate(72)"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbdd" transform="rotate(144)"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbdd" transform="rotate(216)"/><path d="M0,-15 C-3,-11-4,-4-2,4 C-1,8 0,10 0,10" fill="#ffbbdd" transform="rotate(288)"/><circle r="4" fill="#ffee88"/></g></svg>`;
+// リンドウ
+S.rindou=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5f0ff"/><line x1="100" y1="195" x2="100" y2="50" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="172" rx="26" ry="9" fill="#5aaa3a" transform="rotate(-20,74,172)"/><ellipse cx="126" cy="147" rx="24" ry="9" fill="#5aaa3a" transform="rotate(20,126,147)"/><g transform="translate(100,57)"><path d="M0,-22 C-8,-20-12,-11-12,-3 C-12,7-6,14 0,16 C6,14 12,7 12,-3 C12,-11 8,-20 0,-22Z" fill="#5533aa"/><path d="M0,-22 C-3,-17-4,-9-4,-3 C-4,5-2,10 0,12" fill="#6644bb"/><path d="M0,-22 C3,-17 4,-9 4,-3 C4,5 2,10 0,12" fill="#6644bb"/></g><g transform="translate(86,88)"><path d="M0,-20 C-7,-18-11,-10-11,-3 C-11,5-5,12 0,14 C5,12 11,5 11,-3 C11,-10 7,-18 0,-20Z" fill="#4422aa"/><path d="M0,-20 C-3,-15-4,-8-4,-3 C-4,4-2,9 0,11" fill="#5533bb"/></g><g transform="translate(114,78)"><path d="M0,-20 C-7,-18-11,-10-11,-3 C-11,5-5,12 0,14 C5,12 11,5 11,-3 C11,-10 7,-18 0,-20Z" fill="#4422aa"/><path d="M0,-20 C3,-15 4,-8 4,-3 C4,4 2,9 0,11" fill="#5533bb"/></g><g transform="translate(96,118)"><path d="M0,-18 C-6,-16-10,-9-10,-3 C-10,4-5,10 0,12" fill="#3311aa"/><path d="M0,-18 C6,-16 10,-9 10,-3 C10,4 5,10 0,12" fill="#3311aa"/></g></svg>`;
+// ダリア
+S.dahlia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f5"/><line x1="100" y1="195" x2="100" y2="116" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="163" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-22,74,163)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(30)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(60)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(90)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(120)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(150)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(180)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(210)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(240)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(270)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(300)"/><ellipse cx="0" cy="-36" rx="7" ry="20" fill="#cc2277" transform="rotate(330)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(30)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(60)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(90)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(120)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(150)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(180)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(210)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(240)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(270)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(300)"/><ellipse cx="0" cy="-24" rx="6" ry="15" fill="#ee3388" transform="rotate(330)"/><ellipse cx="0" cy="-13" rx="5" ry="10" fill="#ff44aa"/><ellipse cx="0" cy="-13" rx="5" ry="10" fill="#ff44aa" transform="rotate(30)"/><ellipse cx="0" cy="-13" rx="5" ry="10" fill="#ff44aa" transform="rotate(90)"/><ellipse cx="0" cy="-13" rx="5" ry="10" fill="#ff44aa" transform="rotate(150)"/><ellipse cx="0" cy="-13" rx="5" ry="10" fill="#ff44aa" transform="rotate(210)"/><ellipse cx="0" cy="-13" rx="5" ry="10" fill="#ff44aa" transform="rotate(270)"/><ellipse cx="0" cy="-13" rx="5" ry="10" fill="#ff44aa" transform="rotate(330)"/><circle r="8" fill="#aa0055"/></g></svg>`;
+// シャクヤク
+S.shakuyaku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/><line x1="100" y1="195" x2="100" y2="119" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="166" rx="26" ry="10" fill="#5aaa3a" transform="rotate(-22,74,166)"/><g transform="translate(100,82)"><path d="M0,-45 C-20,-42-36,-26-36,-8 C-36,10-22,24 0,28 C22,24 36,10 36,-8 C36,-26 20,-42 0,-45Z" fill="#ffbbcc"/><path d="M0,-45 C-10,-38-18,-24-18,-8 C-18,6-10,18 0,22 C10,18 18,6 18,-8 C18,-24 10,-38 0,-45Z" fill="#ff99bb"/><path d="M0,-45 C-4,-36-8,-22-8,-8 C-8,4-4,14 0,18 C4,14 8,4 8,-8 C8,-22 4,-36 0,-45Z" fill="#ff88aa"/><path d="M-36,-8 C-30,-18-18,-24-8,-20" fill="#ffaacc"/><path d="M36,-8 C30,-18 18,-24 8,-20" fill="#ffaacc"/><path d="M-18,12 C-10,20-4,24 0,24" fill="#ffbbdd"/><path d="M18,12 C10,20 4,24 0,24" fill="#ffbbdd"/><circle r="8" fill="#ffdd44"/></g></svg>`;
+// スイートピー
+S.sweetpea=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f8"/><path d="M100,195 C100,170 95,145 88,120 C82,98 78,78 82,55" stroke="#4a8a2a" stroke-width="2.5" fill="none"/><ellipse cx="66" cy="172" rx="22" ry="9" fill="#5aaa3a" transform="rotate(-20,66,172)"/><g transform="translate(90,157)"><path d="M0,-20 C-14,-18-20,-6-16,6 C-12,16-4,20 0,20 C4,20 12,16 16,6 C20,-6 14,-18 0,-20Z" fill="#ffaacc"/><path d="M0,-20 C-4,-14-5,-4-3,6 C-1,12 0,16 0,20" fill="#ff88bb"/><path d="M0,-20 C4,-14 5,-4 3,6 C1,12 0,16 0,20" fill="#ff88bb"/></g><g transform="translate(85,122)"><path d="M0,-18 C-12,-16-18,-5-14,6 C-10,15-3,18 0,18 C3,18 10,15 14,6 C18,-5 12,-16 0,-18Z" fill="#ff99dd"/><path d="M0,-18 C-3,-12-4,-3-2,6 C-1,11 0,15 0,18" fill="#ff77cc"/></g><g transform="translate(82,90)"><path d="M0,-16 C-10,-14-15,-4-12,5 C-9,13-3,16 0,16" fill="#ffbbdd"/><path d="M0,-16 C10,-14 15,-4 12,5 C9,13 3,16 0,16" fill="#ffbbdd"/></g></svg>`;
+// グラジオラス
+S.gladiolus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5ff"/><line x1="108" y1="195" x2="100" y2="30" stroke="#4a8a2a" stroke-width="4"/><ellipse cx="84" cy="177" rx="25" ry="9" fill="#5aaa3a" transform="rotate(-20,84,177)"/><g transform="translate(92,162)"><ellipse cx="-10" cy="0" rx="16" ry="10" fill="#ff88cc" transform="rotate(-20)"/><ellipse cx="10" cy="0" rx="16" ry="10" fill="#ff88cc" transform="rotate(20)"/><ellipse cx="0" cy="-10" rx="10" ry="14" fill="#ff99dd"/><circle cx="0" cy="0" r="5" fill="#ffdd44"/></g><g transform="translate(96,130)"><ellipse cx="-10" cy="0" rx="16" ry="10" fill="#ff77bb" transform="rotate(-20)"/><ellipse cx="10" cy="0" rx="16" ry="10" fill="#ff77bb" transform="rotate(20)"/><ellipse cx="0" cy="-10" rx="10" ry="14" fill="#ff88cc"/><circle cx="0" cy="0" r="5" fill="#ffdd44"/></g><g transform="translate(100,98)"><ellipse cx="-10" cy="0" rx="14" ry="9" fill="#ee66aa" transform="rotate(-20)"/><ellipse cx="10" cy="0" rx="14" ry="9" fill="#ee66aa" transform="rotate(20)"/><ellipse cx="0" cy="-10" rx="9" ry="12" fill="#ff77bb"/><circle cx="0" cy="0" r="4" fill="#ffdd44"/></g><g transform="translate(102,70)"><ellipse cx="0" cy="-8" rx="7" ry="10" fill="#dd5599"/><ellipse cx="-7" cy="2" rx="6" ry="8" fill="#dd5599"/><ellipse cx="7" cy="2" rx="6" ry="8" fill="#dd5599"/></g></svg>`;
+// フリージア
+S.freesia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde0"/><path d="M100,195 C100,160 98,130 92,100 C88,80 86,60 90,40" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="70" cy="167" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,70,167)"/><g transform="translate(95,157) rotate(-30)"><ellipse cx="0" cy="-12" rx="8" ry="14" fill="#ffee44"/><ellipse cx="-10" cy="4" rx="8" ry="12" fill="#ffee44"/><ellipse cx="10" cy="4" rx="8" ry="12" fill="#ffee44"/><circle cx="0" cy="2" r="5" fill="#ff9900"/></g><g transform="translate(88,122) rotate(-20)"><ellipse cx="0" cy="-12" rx="8" ry="14" fill="#ffdd33"/><ellipse cx="-10" cy="4" rx="8" ry="12" fill="#ffdd33"/><ellipse cx="10" cy="4" rx="8" ry="12" fill="#ffdd33"/><circle cx="0" cy="2" r="5" fill="#ee8800"/></g><g transform="translate(82,90) rotate(-10)"><ellipse cx="0" cy="-11" rx="7" ry="12" fill="#ffcc22"/><ellipse cx="-9" cy="4" rx="7" ry="11" fill="#ffcc22"/><ellipse cx="9" cy="4" rx="7" ry="11" fill="#ffcc22"/></g></svg>`;
+// カスミソウ
+S.kasumi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f8ff"/><line x1="100" y1="195" x2="100" y2="142" stroke="#4a8a2a" stroke-width="2.5"/><path d="M100,142 L75,112 M100,142 L125,112 M100,142 L100,102 M75,112 L60,87 M75,112 L88,84 M125,112 L140,87 M125,112 L112,84 M100,102 L85,77 M100,102 L115,77" stroke="#5aaa3a" stroke-width="1.5" fill="none"/><path d="M60,87 L52,70 M60,87 L68,70 M88,84 L82,67 M88,84 L95,67 M140,87 L132,70 M140,87 L148,70 M112,84 L106,67 M112,84 L118,67 M85,77 L78,60 M85,77 L92,60 M115,77 L108,60 M115,77 L122,60" stroke="#5aaa3a" stroke-width="1" fill="none"/><circle cx="52" cy="68" r="5" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="68" cy="68" r="4" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="82" cy="65" r="5" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="95" cy="65" r="4" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="132" cy="68" r="4" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="148" cy="68" r="5" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="106" cy="65" r="4" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="118" cy="65" r="5" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="78" cy="58" r="5" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="92" cy="58" r="4" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="108" cy="58" r="5" fill="white" stroke="#ddd" stroke-width="1"/><circle cx="122" cy="58" r="4" fill="white" stroke="#ddd" stroke-width="1"/></svg>`;
+// ユーカリ
+S.eucalyptus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8f0"/><line x1="100" y1="195" x2="100" y2="40" stroke="#5a7a3a" stroke-width="3"/><ellipse cx="80" cy="82" rx="22" ry="14" fill="#7aaa5a" transform="rotate(-30,80,82)"/><ellipse cx="120" cy="72" rx="22" ry="14" fill="#8abb6a" transform="rotate(30,120,72)"/><ellipse cx="75" cy="112" rx="24" ry="15" fill="#6a9a4a" transform="rotate(-25,75,112)"/><ellipse cx="125" cy="102" rx="24" ry="15" fill="#7aaa5a" transform="rotate(25,125,102)"/><ellipse cx="78" cy="142" rx="22" ry="14" fill="#8abb6a" transform="rotate(-20,78,142)"/><ellipse cx="122" cy="132" rx="22" ry="14" fill="#6a9a4a" transform="rotate(20,122,132)"/><ellipse cx="80" cy="170" rx="20" ry="12" fill="#7aaa5a" transform="rotate(-15,80,170)"/><ellipse cx="120" cy="162" rx="20" ry="12" fill="#8abb6a" transform="rotate(15,120,162)"/></svg>`;
+// マツ
+S.matsu=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8f0"/><line x1="100" y1="195" x2="100" y2="40" stroke="#6a4a2a" stroke-width="5"/><g transform="translate(100,142)"><line x1="-40" y1="0" x2="40" y2="0" stroke="#6a4a2a" stroke-width="2"/><line x1="-36" y1="0" x2="-52" y2="-12" stroke="#2a6a1a" stroke-width="1.5"/><line x1="-26" y1="0" x2="-40" y2="-20" stroke="#2a6a1a" stroke-width="1.5"/><line x1="-14" y1="0" x2="-18" y2="-25" stroke="#2a6a1a" stroke-width="1.5"/><line x1="0" y1="0" x2="0" y2="-26" stroke="#2a6a1a" stroke-width="1.5"/><line x1="14" y1="0" x2="18" y2="-25" stroke="#2a6a1a" stroke-width="1.5"/><line x1="26" y1="0" x2="40" y2="-20" stroke="#2a6a1a" stroke-width="1.5"/><line x1="36" y1="0" x2="52" y2="-12" stroke="#2a6a1a" stroke-width="1.5"/></g><g transform="translate(100,106)"><line x1="-32" y1="0" x2="32" y2="0" stroke="#6a4a2a" stroke-width="2"/><line x1="-28" y1="0" x2="-42" y2="-14" stroke="#2a6a1a" stroke-width="1.5"/><line x1="-16" y1="0" x2="-24" y2="-22" stroke="#2a6a1a" stroke-width="1.5"/><line x1="0" y1="0" x2="0" y2="-24" stroke="#2a6a1a" stroke-width="1.5"/><line x1="16" y1="0" x2="24" y2="-22" stroke="#2a6a1a" stroke-width="1.5"/><line x1="28" y1="0" x2="42" y2="-14" stroke="#2a6a1a" stroke-width="1.5"/></g><g transform="translate(100,73)"><line x1="-24" y1="0" x2="24" y2="0" stroke="#6a4a2a" stroke-width="2"/><line x1="-20" y1="0" x2="-30" y2="-14" stroke="#2a6a1a" stroke-width="1.5"/><line x1="-8" y1="0" x2="-11" y2="-20" stroke="#2a6a1a" stroke-width="1.5"/><line x1="8" y1="0" x2="11" y2="-20" stroke="#2a6a1a" stroke-width="1.5"/><line x1="20" y1="0" x2="30" y2="-14" stroke="#2a6a1a" stroke-width="1.5"/></g></svg>`;
+// ヒヤシンス
+S.hyacinth=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5f0ff"/><line x1="100" y1="195" x2="100" y2="55" stroke="#4a8a2a" stroke-width="5"/><ellipse cx="70" cy="177" rx="28" ry="11" fill="#5aaa3a" transform="rotate(-20,70,177)"/><ellipse cx="130" cy="167" rx="28" ry="11" fill="#5aaa3a" transform="rotate(20,130,167)"/><g transform="translate(82,157) rotate(-30)"><ellipse rx="7" ry="10" fill="#9966dd"/><circle cx="0" cy="-7" r="4" fill="#aa77ee"/><circle cx="0" cy="-7" r="4" fill="#9966dd" transform="rotate(120)"/><circle cx="0" cy="-7" r="4" fill="#aa77ee" transform="rotate(240)"/></g><g transform="translate(118,147) rotate(30)"><ellipse rx="7" ry="10" fill="#8855cc"/><circle cx="0" cy="-7" r="4" fill="#9966dd"/><circle cx="0" cy="-7" r="4" fill="#8855cc" transform="rotate(120)"/><circle cx="0" cy="-7" r="4" fill="#9966dd" transform="rotate(240)"/></g><g transform="translate(80,127) rotate(-20)"><ellipse rx="7" ry="10" fill="#9966dd"/><circle cx="0" cy="-7" r="4" fill="#aa77ee"/><circle cx="0" cy="-7" r="4" fill="#9966dd" transform="rotate(120)"/><circle cx="0" cy="-7" r="4" fill="#aa77ee" transform="rotate(240)"/></g><g transform="translate(120,117) rotate(20)"><ellipse rx="7" ry="10" fill="#7744bb"/><circle cx="0" cy="-7" r="4" fill="#8855cc"/><circle cx="0" cy="-7" r="4" fill="#7744bb" transform="rotate(120)"/><circle cx="0" cy="-7" r="4" fill="#8855cc" transform="rotate(240)"/></g><g transform="translate(82,97) rotate(-10)"><ellipse rx="7" ry="10" fill="#8855cc"/><circle cx="0" cy="-7" r="4" fill="#9966dd"/><circle cx="0" cy="-7" r="4" fill="#8855cc" transform="rotate(120)"/><circle cx="0" cy="-7" r="4" fill="#9966dd" transform="rotate(240)"/></g><g transform="translate(118,87) rotate(10)"><ellipse rx="7" ry="10" fill="#7744bb"/><circle cx="0" cy="-7" r="4" fill="#8855cc"/><circle cx="0" cy="-7" r="4" fill="#7744bb" transform="rotate(120)"/><circle cx="0" cy="-7" r="4" fill="#8855cc" transform="rotate(240)"/></g><g transform="translate(100,70)"><ellipse rx="6" ry="9" fill="#6633aa"/><circle cx="0" cy="-6" r="3.5" fill="#7744bb"/><circle cx="0" cy="-6" r="3.5" fill="#6633aa" transform="rotate(120)"/><circle cx="0" cy="-6" r="3.5" fill="#7744bb" transform="rotate(240)"/></g></svg>`;
+// ナノハナ
+S.nanohana=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffff0"/><line x1="100" y1="195" x2="100" y2="60" stroke="#4a8a2a" stroke-width="4"/><ellipse cx="70" cy="157" rx="30" ry="12" fill="#5aaa3a" transform="rotate(-25,70,157)"/><ellipse cx="130" cy="142" rx="30" ry="12" fill="#5aaa3a" transform="rotate(25,130,142)"/><g transform="translate(88,82)"><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00"/><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00" transform="rotate(90)"/><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00" transform="rotate(180)"/><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00" transform="rotate(270)"/><circle r="5" fill="#ffcc00"/></g><g transform="translate(112,70)"><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00"/><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00" transform="rotate(90)"/><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00" transform="rotate(180)"/><ellipse cx="0" cy="-10" rx="7" ry="10" fill="#ffee00" transform="rotate(270)"/><circle r="5" fill="#ffcc00"/></g><g transform="translate(98,55)"><ellipse cx="0" cy="-9" rx="6" ry="9" fill="#ffdd00"/><ellipse cx="0" cy="-9" rx="6" ry="9" fill="#ffdd00" transform="rotate(90)"/><ellipse cx="0" cy="-9" rx="6" ry="9" fill="#ffdd00" transform="rotate(180)"/><ellipse cx="0" cy="-9" rx="6" ry="9" fill="#ffdd00" transform="rotate(270)"/><circle r="4" fill="#ffcc00"/></g><g transform="translate(76,92)"><ellipse cx="0" cy="-8" rx="5" ry="8" fill="#ffee44"/><ellipse cx="0" cy="-8" rx="5" ry="8" fill="#ffee44" transform="rotate(90)"/><ellipse cx="0" cy="-8" rx="5" ry="8" fill="#ffee44" transform="rotate(180)"/><ellipse cx="0" cy="-8" rx="5" ry="8" fill="#ffee44" transform="rotate(270)"/><circle r="4" fill="#ffbb00"/></g></svg>`;
+// ストレリチア
+S.strelitzia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8ff"/><line x1="100" y1="195" x2="100" y2="60" stroke="#4a8a2a" stroke-width="4"/><ellipse cx="74" cy="167" rx="26" ry="10" fill="#5aaa3a" transform="rotate(-20,74,167)"/><path d="M65,82 L100,62 L90,122 L65,82Z" fill="#5aaa3a"/><path d="M135,77 L100,62 L110,117 L135,77Z" fill="#4a9a2a"/><path d="M100,62 C95,52 85,44 75,47 C65,50 62,60 65,70 C68,78 76,82 85,80" fill="#ff8800"/><path d="M100,62 C105,52 115,44 125,47 C135,50 138,60 135,70 C132,78 124,82 115,80" fill="#ff6600"/><path d="M78,60 C80,54 86,50 92,54 C96,57 97,62 95,67" fill="#5588cc"/><path d="M82,64 C84,56 90,52 96,56 C100,59 101,65 98,70" fill="#4477bb"/></svg>`;
+// 竹
+S.take=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0fff0"/><rect x="87" y="20" width="14" height="180" rx="5" fill="#5a8a2a"/><rect x="87" y="20" width="14" height="180" rx="5" fill="none" stroke="#4a7a1a" stroke-width="1"/><line x1="87" y1="57" x2="101" y2="57" stroke="#3a6a1a" stroke-width="2.5"/><line x1="87" y1="92" x2="101" y2="92" stroke="#3a6a1a" stroke-width="2.5"/><line x1="87" y1="127" x2="101" y2="127" stroke="#3a6a1a" stroke-width="2.5"/><line x1="87" y1="162" x2="101" y2="162" stroke="#3a6a1a" stroke-width="2.5"/><path d="M87,57 C70,52 55,44 50,34" stroke="#5a8a2a" stroke-width="2" fill="none"/><ellipse cx="48" cy="32" rx="14" ry="6" fill="#6aaa3a" transform="rotate(-20,48,32)"/><path d="M101,57 C118,52 133,44 138,34" stroke="#5a8a2a" stroke-width="2" fill="none"/><ellipse cx="140" cy="32" rx="14" ry="6" fill="#6aaa3a" transform="rotate(20,140,32)"/><path d="M87,127 C70,122 55,112 52,102" stroke="#5a8a2a" stroke-width="2" fill="none"/><ellipse cx="50" cy="100" rx="13" ry="5.5" fill="#6aaa3a" transform="rotate(-20,50,100)"/><path d="M101,92 C120,87 136,77 140,67" stroke="#5a8a2a" stroke-width="2" fill="none"/><ellipse cx="142" cy="65" rx="13" ry="5.5" fill="#6aaa3a" transform="rotate(20,142,65)"/></svg>`;
+// ドラセナ/観葉
+S.dracena=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/><path d="M90,195 L95,120 L100,90 L105,120 L110,195Z" fill="#6a4a2a"/><path d="M100,90 C80,75 55,60 40,45" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="35" cy="40" rx="30" ry="8" fill="#3a8a1a" transform="rotate(-20,35,40)"/><path d="M100,90 C120,75 145,60 160,45" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="165" cy="40" rx="30" ry="8" fill="#4a9a2a" transform="rotate(20,165,40)"/><path d="M100,90 C85,68 72,45 68,25" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="65" cy="20" rx="28" ry="7" fill="#3a8a1a" transform="rotate(-30,65,20)"/><path d="M100,90 C115,68 128,45 132,25" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="135" cy="20" rx="28" ry="7" fill="#4a9a2a" transform="rotate(30,135,20)"/><path d="M100,90 L100,35" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="100" cy="28" rx="25" ry="7" fill="#5aaa3a"/></svg>`;
+// 鉢物汎用
+S.hachi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/><path d="M70,172 L130,172 L120,197 L80,197Z" fill="#7a5a3a"/><rect x="68" y="150" width="64" height="24" rx="6" fill="#8a6a4a"/><rect x="65" y="142" width="70" height="14" rx="5" fill="#9a7a5a"/><ellipse cx="100" cy="142" rx="50" ry="20" fill="#6aaa3a"/><ellipse cx="88" cy="120" rx="16" ry="22" fill="#5a9a2a" transform="rotate(-15,88,120)"/><ellipse cx="112" cy="117" rx="16" ry="22" fill="#6aaa3a" transform="rotate(15,112,117)"/><ellipse cx="100" cy="110" rx="14" ry="20" fill="#7abb4a"/><g transform="translate(100,92)"><ellipse cx="0" cy="-18" rx="5" ry="12" fill="#ee6688"/><ellipse cx="0" cy="-18" rx="5" ry="12" fill="#ee6688" transform="rotate(60)"/><ellipse cx="0" cy="-18" rx="5" ry="12" fill="#ee6688" transform="rotate(120)"/><ellipse cx="0" cy="-18" rx="5" ry="12" fill="#ee6688" transform="rotate(180)"/><ellipse cx="0" cy="-18" rx="5" ry="12" fill="#ee6688" transform="rotate(240)"/><ellipse cx="0" cy="-18" rx="5" ry="12" fill="#ee6688" transform="rotate(300)"/><circle r="8" fill="#ffdd44"/></g></svg>`;
+// ポインセチア
+S.poinsettia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/><line x1="100" y1="195" x2="100" y2="122" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="170" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,74,170)"/><g transform="translate(100,87)"><path d="M0,0 C-8,-5-16,-18-12,-30 C-8,-40 0,-42 0,-42 C0,-42 8,-40 12,-30 C16,-18 8,-5 0,0Z" fill="#cc1122"/><path d="M0,0 C-8,-5-16,-18-12,-30 C-8,-40 0,-42 0,-42" fill="#cc1122" transform="rotate(51.4)"/><path d="M0,0 C-8,-5-16,-18-12,-30 C-8,-40 0,-42 0,-42" fill="#cc1122" transform="rotate(102.8)"/><path d="M0,0 C-8,-5-16,-18-12,-30 C-8,-40 0,-42 0,-42" fill="#cc1122" transform="rotate(154.2)"/><path d="M0,0 C-8,-5-16,-18-12,-30 C-8,-40 0,-42 0,-42" fill="#cc1122" transform="rotate(205.7)"/><path d="M0,0 C-8,-5-16,-18-12,-30 C-8,-40 0,-42 0,-42" fill="#cc1122" transform="rotate(257.1)"/><path d="M0,0 C-8,-5-16,-18-12,-30 C-8,-40 0,-42 0,-42" fill="#cc1122" transform="rotate(308.6)"/><circle r="12" fill="#ffee00"/><circle r="7" fill="#ffcc00"/><circle cx="0" cy="-5" r="2.5" fill="#ff8800"/><circle cx="0" cy="-5" r="2.5" fill="#ff8800" transform="rotate(60)"/><circle cx="0" cy="-5" r="2.5" fill="#ff8800" transform="rotate(120)"/><circle cx="0" cy="-5" r="2.5" fill="#ff8800" transform="rotate(180)"/><circle cx="0" cy="-5" r="2.5" fill="#ff8800" transform="rotate(240)"/><circle cx="0" cy="-5" r="2.5" fill="#ff8800" transform="rotate(300)"/></g></svg>`;
+// シクラメン
+S.cyclamen=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f8"/><ellipse cx="80" cy="147" rx="20" ry="12" fill="#88cc44" transform="rotate(-25,80,147)"/><ellipse cx="120" cy="147" rx="20" ry="12" fill="#77bb33" transform="rotate(25,120,147)"/><ellipse cx="68" cy="122" rx="18" ry="11" fill="#6aaa3a" transform="rotate(-30,68,122)"/><ellipse cx="132" cy="122" rx="18" ry="11" fill="#5a9a2a" transform="rotate(30,132,122)"/><path d="M100,140 C88,128 80,110 82,95 C84,82 92,74 100,72 C108,74 116,82 118,95 C120,110 112,128 100,140Z" fill="#5a8a2a" opacity=".5"/><path d="M90,72 C75,62 65,45 72,32 C78,21 92,19 100,25" stroke="#4a8a2a" stroke-width="2" fill="none"/><path d="M100,25 C95,15 97,2 104,-5 C108,-9 112,-9 115,-6" stroke="#4a8a2a" stroke-width="1.5" fill="none"/><path d="M100,25 C80,7 76,-9 85,-15 C90,-19 96,-17 100,-11" fill="#ff5588"/><path d="M100,25 C96,11 98,-1 103,-7 C106,-11 110,-11 112,-7" fill="#ff4477" opacity=".9"/><path d="M100,25 C108,9 114,-5 110,-15 C108,-21 103,-22 100,-18" fill="#ff6699"/><path d="M110,72 C125,62 135,45 128,32 C122,21 108,19 100,25" stroke="#4a8a2a" stroke-width="2" fill="none"/></svg>`;
+// アンスリウム
+S.anthrium=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/><line x1="100" y1="195" x2="100" y2="122" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="72" cy="170" rx="26" ry="10" fill="#5aaa3a" transform="rotate(-20,72,170)"/><path d="M68,122 C60,107 58,87 65,70 C72,54 86,46 100,46 C114,46 128,54 135,70 C142,87 140,107 132,122 C126,134 114,142 100,142 C86,142 74,134 68,122Z" fill="#ff3344"/><path d="M68,122 C65,110 66,92 72,77 C78,62 88,54 100,52 C100,52 92,62 90,80 C88,96 92,112 100,122 C94,134 84,140 74,134 C70,130 68,126 68,122Z" fill="#ee2233"/><path d="M100,122 L115,82" stroke="#ffcc44" stroke-width="4" stroke-linecap="round"/><ellipse cx="117" cy="78" rx="5" ry="8" fill="#ffdd44" transform="rotate(15,117,78)"/></svg>`;
+// ポピー
+S.poppy=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f0"/><path d="M100,195 Q95,165 92,142 Q90,122 95,102 Q98,90 100,82" stroke="#4a8a2a" stroke-width="3" fill="none"/><ellipse cx="72" cy="170" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-22,72,170)"/><g transform="translate(100,67)"><path d="M0,-35 C-20,-32-32,-16-30,0 C-28,14-16,22 0,24" fill="#ff4422"/><path d="M0,-35 C20,-32 32,-16 30,0 C28,14 16,22 0,24" fill="#ee3311"/><path d="M-30,0 C-28,14-16,24 0,28" fill="#ff5533"/><path d="M30,0 C28,14 16,24 0,28" fill="#ff5533"/><circle r="12" fill="#222"/><circle r="6" fill="#333"/></g></svg>`;
+// ハス
+S.hasu=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#e8f8ff"/><ellipse cx="100" cy="177" rx="70" ry="16" fill="#5aaa44" opacity=".6"/><line x1="100" y1="177" x2="100" y2="112" stroke="#5a8a2a" stroke-width="4"/><g transform="translate(100,92)"><path d="M0,-45 C-5,-35-8,-20-6,-5 C-4,8-2,16 0,20" fill="#ffaacc"/><path d="M0,-45 C5,-35 8,-20 6,-5 C4,8 2,16 0,20" fill="#ff99bb"/><path d="M0,-45 C-22,-38-30,-22-26,-6 C-22,6-14,16 0,20" fill="#ffbbdd"/><path d="M0,-45 C22,-38 30,-22 26,-6 C22,6 14,16 0,20" fill="#ffbbdd"/><path d="M0,-45 C-36,-30-40,-10-34,5 C-28,16-16,22 0,24" fill="#ffccee"/><path d="M0,-45 C36,-30 40,-10 34,5 C28,16 16,22 0,24" fill="#ffccee"/><path d="M0,-45 C-44,-22-44,0-36,14 C-28,24-16,28 0,28" fill="#ffddf5" opacity=".8"/><path d="M0,-45 C44,-22 44,0 36,14 C28,24 16,28 0,28" fill="#ffddf5" opacity=".8"/><ellipse cx="0" cy="10" rx="14" ry="10" fill="#ffee44"/></g></svg>`;
+// ホオヅキ
+S.hooduki=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffaee"/><line x1="100" y1="195" x2="100" y2="62" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="170" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,74,170)"/><path d="M80,122 C72,110 70,94 76,80 C82,67 92,60 100,60 C108,60 118,67 124,80 C130,94 128,110 120,122 C114,132 108,137 100,138 C92,137 86,132 80,122Z" fill="#ff7700"/><path d="M80,122 C75,112 75,97 80,84 C85,72 92,65 100,64" fill="#ee6600"/><circle cx="100" cy="102" r="14" fill="#ff3300" opacity=".8"/></svg>`;
+// リシアンサス（トルコキキョウ）
+S.lisianthus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/><line x1="100" y1="195" x2="100" y2="102" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="164" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-22,74,164)"/><g transform="translate(100,80)"><path d="M0,-46 C-16,-44-28,-32-28,-18 C-28,-4-18,6-8,10 C-4,12 0,12 0,12" fill="#9966cc"/><path d="M0,-46 C16,-44 28,-32 28,-18 C28,-4 18,6 8,10 C4,12 0,12 0,12" fill="#9966cc"/><path d="M-28,-18 C-32,-6-28,6-18,12" fill="#aa77dd"/><path d="M28,-18 C32,-6 28,6 18,12" fill="#aa77dd"/><path d="M-18,-36 C-26,-28-28,-16-26,-6" fill="#bb88ee"/><path d="M18,-36 C26,-28 28,-16 26,-6" fill="#bb88ee"/><ellipse cx="0" cy="-2" rx="10" ry="8" fill="#cc99ff"/><line x1="-6" y1="-5" x2="-8" y2="5" stroke="#5a8a2a" stroke-width="1.5"/><line x1="0" y1="-6" x2="0" y2="5" stroke="#5a8a2a" stroke-width="1.5"/><line x1="6" y1="-5" x2="8" y2="5" stroke="#5a8a2a" stroke-width="1.5"/></g></svg>`;
+// ストック
+S.stock=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/><line x1="100" y1="195" x2="100" y2="50" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="170" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,74,170)"/><g transform="translate(88,162)"><ellipse cx="-8" cy="0" rx="10" ry="7" fill="#cc88dd" transform="rotate(-20)"/><ellipse cx="8" cy="0" rx="10" ry="7" fill="#cc88dd" transform="rotate(20)"/><ellipse cx="0" cy="-8" rx="7" ry="10" fill="#cc88dd"/><ellipse cx="0" cy="8" rx="7" ry="10" fill="#bb77cc"/><circle cx="0" cy="0" r="4" fill="#ffee44"/></g><g transform="translate(112,147)"><ellipse cx="-8" cy="0" rx="10" ry="7" fill="#bb77cc" transform="rotate(-20)"/><ellipse cx="8" cy="0" rx="10" ry="7" fill="#bb77cc" transform="rotate(20)"/><ellipse cx="0" cy="-8" rx="7" ry="10" fill="#bb77cc"/><ellipse cx="0" cy="8" rx="7" ry="10" fill="#aa66bb"/><circle cx="0" cy="0" r="4" fill="#ffee44"/></g><g transform="translate(88,122)"><ellipse cx="-8" cy="0" rx="9" ry="6" fill="#dd99ee" transform="rotate(-20)"/><ellipse cx="8" cy="0" rx="9" ry="6" fill="#dd99ee" transform="rotate(20)"/><ellipse cx="0" cy="-7" rx="6" ry="9" fill="#dd99ee"/><circle cx="0" cy="0" r="3.5" fill="#ffee44"/></g><g transform="translate(112,107)"><ellipse cx="-7" cy="0" rx="9" ry="6" fill="#cc88dd" transform="rotate(-20)"/><ellipse cx="7" cy="0" rx="9" ry="6" fill="#cc88dd" transform="rotate(20)"/><ellipse cx="0" cy="-7" rx="6" ry="9" fill="#cc88dd"/><circle cx="0" cy="0" r="3.5" fill="#ffee44"/></g></svg>`;
+// アルストロメリア
+S.alstroemeria=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/><line x1="100" y1="195" x2="100" y2="82" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="167" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-20,74,167)"/><g transform="translate(85,72)"><path d="M0,-28 C-5,-20-7,-8-5,4 C-3,12 0,18 0,18 C0,18 3,12 5,4 C7,-8 5,-20 0,-28Z" fill="#ff8844"/><path d="M-18,-18 C-16,-10-10,-2-5,4" stroke="#ff4400" stroke-width="1.5" fill="none"/><path d="M18,-18 C16,-10 10,-2 5,4" stroke="#ff4400" stroke-width="1.5" fill="none"/></g><g transform="translate(115,67)"><path d="M0,-28 C-5,-20-7,-8-5,4 C-3,12 0,18 0,18 C0,18 3,12 5,4 C7,-8 5,-20 0,-28Z" fill="#ffaa44"/><path d="M-18,-18 C-16,-10-10,-2-5,4" stroke="#ee6600" stroke-width="1.5" fill="none"/></g><g transform="translate(100,92)"><path d="M0,-26 C-5,-18-7,-6-5,5" fill="#ff9933"/><path d="M0,-26 C5,-18 7,-6 5,5" fill="#ffbb44"/></g><circle cx="85" cy="92" r="6" fill="#ffdd44"/><circle cx="115" cy="87" r="6" fill="#ffdd44"/><circle cx="100" cy="97" r="6" fill="#ffdd44"/></svg>`;
+// ライラック
+S.lilac=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/><line x1="100" y1="195" x2="100" y2="122" stroke="#5a4a2a" stroke-width="4"/><path d="M100,122 C85,112 70,97 65,77" stroke="#5a4a2a" stroke-width="2.5" fill="none"/><path d="M100,122 C115,112 130,97 135,77" stroke="#5a4a2a" stroke-width="2.5" fill="none"/><g transform="translate(75,70)"><circle cx="-12" cy="-6" r="6" fill="#cc88ee"/><circle cx="0" cy="-12" r="6" fill="#bb77dd"/><circle cx="12" cy="-6" r="6" fill="#cc88ee"/><circle cx="-8" cy="6" r="6" fill="#dd99ff"/><circle cx="8" cy="6" r="6" fill="#cc88ee"/><circle cx="0" cy="14" r="6" fill="#bb77dd"/></g><g transform="translate(125,70)"><circle cx="-10" cy="-8" r="5.5" fill="#bb77dd"/><circle cx="2" cy="-14" r="5.5" fill="#cc88ee"/><circle cx="10" cy="-4" r="5.5" fill="#bb77dd"/><circle cx="-6" cy="6" r="5.5" fill="#dd99ff"/><circle cx="8" cy="8" r="5.5" fill="#cc88ee"/><circle cx="0" cy="15" r="5.5" fill="#bb77dd"/></g><g transform="translate(100,57)"><circle cx="-8" cy="-10" r="5" fill="#cc88ee"/><circle cx="5" cy="-14" r="5" fill="#bb77dd"/><circle cx="14" cy="-4" r="5" fill="#cc88ee"/><circle cx="-10" cy="2" r="5" fill="#dd99ff"/><circle cx="4" cy="5" r="5" fill="#cc88ee"/></g></svg>`;
+// ツツジ
+S.tsutsuji=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f5"/><line x1="100" y1="195" x2="100" y2="122" stroke="#5a4a2a" stroke-width="4"/><path d="M100,122 C80,112 62,97 58,77" stroke="#5a4a2a" stroke-width="2.5" fill="none"/><path d="M100,122 C120,112 138,97 142,77" stroke="#5a4a2a" stroke-width="2.5" fill="none"/><g transform="translate(78,67)"><path d="M0,-28 C-14,-26-22,-14-20,-2 C-18,8-10,14 0,16 C10,14 18,8 20,-2 C22,-14 14,-26 0,-28Z" fill="#ff6699"/><path d="M0,-28 C-6,-22-8,-12-6,-2 C-4,6 0,12 0,12" fill="#ee4477"/><line x1="-10" y1="-5" x2="-16" y2="5" stroke="#ffaacc" stroke-width="1.5"/><line x1="0" y1="-4" x2="0" y2="8" stroke="#ffaacc" stroke-width="1.5"/><line x1="10" y1="-5" x2="16" y2="5" stroke="#ffaacc" stroke-width="1.5"/></g><g transform="translate(122,67)"><path d="M0,-26 C-13,-24-20,-13-18,-2 C-16,7-9,13 0,15 C9,13 16,7 18,-2 C20,-13 13,-24 0,-26Z" fill="#ff5588"/><path d="M0,-26 C-6,-20-7,-11-5,-2 C-3,5 0,11 0,11" fill="#ee3366"/><line x1="-9" y1="-4" x2="-14" y2="5" stroke="#ffaacc" stroke-width="1.5"/><line x1="0" y1="-3" x2="0" y2="7" stroke="#ffaacc" stroke-width="1.5"/><line x1="9" y1="-4" x2="14" y2="5" stroke="#ffaacc" stroke-width="1.5"/></g><g transform="translate(100,52)"><path d="M0,-24 C-12,-22-18,-12-16,-2 C-14,6-8,12 0,14 C8,12 14,6 16,-2 C18,-12 12,-22 0,-24Z" fill="#ff77aa"/><path d="M0,-24 C-5,-18-6,-10-4,-2 C-2,5 0,10 0,10" fill="#ee5588"/></g></svg>`;
+// アカシア/ミモザ
+S.acacia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/><line x1="100" y1="195" x2="100" y2="50" stroke="#5a7a2a" stroke-width="3"/><path d="M100,162 C80,150 60,134 50,112" stroke="#5a7a2a" stroke-width="2" fill="none"/><path d="M100,132 C118,120 135,102 140,80" stroke="#5a7a2a" stroke-width="2" fill="none"/><path d="M100,102 C82,92 65,74 60,54" stroke="#5a7a2a" stroke-width="2" fill="none"/><path d="M100,72 C115,60 128,44 132,26" stroke="#5a7a2a" stroke-width="2" fill="none"/><g transform="translate(62,117)"><circle r="7" fill="#ffdd00" opacity=".9"/><circle cx="-5" cy="-5" r="5" fill="#ffee22"/><circle cx="5" cy="-5" r="5" fill="#ffdd00"/><circle cx="-8" cy="3" r="4" fill="#ffee22"/><circle cx="8" cy="3" r="4" fill="#ffcc00"/></g><g transform="translate(50,107)"><circle r="6" fill="#ffdd00"/><circle cx="-5" cy="-5" r="5" fill="#ffee22"/><circle cx="5" cy="-5" r="5" fill="#ffdd00"/></g><g transform="translate(128,97)"><circle r="7" fill="#ffdd00"/><circle cx="-5" cy="-5" r="5" fill="#ffee22"/><circle cx="5" cy="-5" r="5" fill="#ffcc00"/><circle cx="0" cy="-8" r="5" fill="#ffee22"/></g><g transform="translate(68,72)"><circle r="7" fill="#ffee22"/><circle cx="-5" cy="-5" r="5" fill="#ffdd00"/><circle cx="5" cy="-5" r="5" fill="#ffee22"/><circle cx="0" cy="-8" r="5" fill="#ffdd00"/></g><g transform="translate(118,34)"><circle r="7" fill="#ffee22"/><circle cx="-5" cy="-5" r="5" fill="#ffdd00"/><circle cx="5" cy="-5" r="5" fill="#ffee22"/><circle cx="0" cy="-8" r="5" fill="#ffcc00"/></g></svg>`;
+// 汎用（切り花）
+S.default_kiri=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/><line x1="100" y1="195" x2="100" y2="112" stroke="#4a8a2a" stroke-width="3"/><ellipse cx="74" cy="164" rx="24" ry="9" fill="#5aaa3a" transform="rotate(-22,74,164)"/><g transform="translate(100,82)"><ellipse cx="0" cy="-28" rx="8" ry="20" fill="#cc88aa"/><ellipse cx="0" cy="-28" rx="8" ry="20" fill="#cc88aa" transform="rotate(60)"/><ellipse cx="0" cy="-28" rx="8" ry="20" fill="#cc88aa" transform="rotate(120)"/><ellipse cx="0" cy="-28" rx="8" ry="20" fill="#cc88aa" transform="rotate(180)"/><ellipse cx="0" cy="-28" rx="8" ry="20" fill="#cc88aa" transform="rotate(240)"/><ellipse cx="0" cy="-28" rx="8" ry="20" fill="#cc88aa" transform="rotate(300)"/><circle r="12" fill="#ffee44"/></g></svg>`;
+
+// =====================================================================
+// 花コード → SVGキー マッピング（190件全て）
+// =====================================================================
+const svgMap = {
+  1:'ran_onshi', 2:'ran_cat', 3:'ran_dendro', 5:'ran_dendro', 6:'ran_phala',
+  7:'ran_onshi', 8:'kikiku', 9:'ran_dendro', 10:'kogiku', 11:'margaret',
+  12:'shirokiku', 13:'kikiku', 14:'akagiku', 15:'bara', 16:'carnation',
+  17:'carnation', 18:'carnation', 19:'carnation', 20:'yuri_w', 21:'yuri_p',
+  22:'yuri_o', 23:'yuri_o', 24:'tulip', 25:'gladiolus', 26:'iris',
+  27:'freesia', 28:'suisen', 29:'default_kiri', 30:'kara', 31:'suisen',
+  32:'gladiolus', 33:'alstroemeria', 34:'iris', 35:'iris', 36:'kasumi',
+  37:'kasumi', 38:'margaret', 39:'default_kiri', 40:'sweetpea', 41:'stock',
+  42:'stock', 43:'gerbera', 44:'gladiolus', 45:'cosmos', 46:'gladiolus',
+  47:'default_kiri', 48:'margaret', 49:'anthrium', 50:'shakuyaku',
+  51:'margaret', 52:'lisianthus', 53:'dahlia', 54:'rindou', 55:'lisianthus',
+  56:'kasumi', 57:'nanohana', 58:'gerbera', 59:'default_kiri', 60:'default_kiri',
+  61:'default_kiri', 62:'rindou', 63:'cosmos', 64:'nanohana', 65:'cosmos',
+  66:'kasumi', 67:'rindou', 68:'cosmos', 69:'alstroemeria', 70:'strelitzia',
+  71:'strelitzia', 72:'sweetpea', 73:'kasumi', 74:'default_kiri', 75:'freesia',
+  76:'default_kiri', 77:'sweetpea', 78:'poppy', 79:'freesia', 80:'cosmos',
+  88:'sweetpea', 91:'gladiolus', 92:'freesia', 93:'shakuyaku', 100:'yuri_w',
+  110:'default_kiri', 130:'cosmos', 160:'kasumi', 190:'default_kiri',
+  200:'hyacinth', 300:'cosmos', 350:'strelitzia', 360:'hooduki', 390:'hasu',
+  400:'default_kiri', 401:'himawari', 402:'kasumi', 405:'margaret',
+  406:'kikiku', 407:'kasumi', 408:'default_kiri', 409:'shakuyaku',
+  410:'hooduki', 412:'default_kiri', 420:'default_kiri',
+  500:'matsu', 505:'eucalyptus', 510:'matsu', 520:'sakura', 522:'sakura',
+  525:'sakura', 530:'tsutsuji', 540:'eucalyptus', 550:'matsu', 560:'tsutsuji',
+  570:'acacia', 575:'lilac', 580:'ajisai', 590:'hooduki',
+  680:'take', 690:'eucalyptus', 691:'eucalyptus', 692:'matsu', 695:'eucalyptus',
+  700:'eucalyptus', 790:'iris', 800:'default_kiri', 850:'default_kiri',
+  900:'default_kiri', 999:'default_kiri',
+  // 鉢物
+  1100:'ran_phala', 1101:'ran_cat', 1102:'ran_phala', 1103:'ran_dendro',
+  1104:'ran_dendro', 1105:'ran_onshi', 1106:'ran_onshi', 1107:'hachi',
+  1108:'ran_cat', 1109:'ran_dendro',
+  1120:'hachi', 1121:'dracena', 1123:'dracena', 1125:'dracena',
+  1127:'dracena', 1130:'dracena', 1133:'eucalyptus', 1135:'take',
+  1136:'hachi', 1137:'hachi', 1140:'hachi', 1141:'kara', 1142:'dracena',
+  1145:'anthrium', 1150:'hachi', 1151:'tsutsuji', 1152:'tsutsuji',
+  1153:'sakura', 1156:'tsutsuji', 1157:'ajisai', 1159:'tsutsuji',
+  1161:'kara', 1162:'bara', 1163:'hachi', 1164:'carnation', 1165:'sweetpea',
+  1166:'shakuyaku', 1170:'hachi', 1171:'cyclamen', 1172:'hachi',
+  1173:'sweetpea', 1174:'hachi', 1175:'shirokiku', 1176:'cosmos',
+  1177:'cosmos', 1179:'freesia', 1180:'hachi', 1181:'hachi',
+  1182:'poinsettia', 1183:'poinsettia', 1185:'hachi',
+  1190:'cosmos', 1191:'cosmos', 1192:'hachi', 1194:'cyclamen',
+  1195:'carnation', 1196:'hachi', 1197:'hachi', 1198:'sakura',
+  1199:'hachi', 1200:'hachi'
+};
+
+// ※ 菊の小花用
+S.kogiku = S.margaret;  // 小菊は丸い形で代用
+
+// =====================================================================
+// 花データ（190件 全て）
+// =====================================================================
+const FLOWERS = [
+  {no:1, name:'オンシジューム', cat:'切り花'},
+  {no:2, name:'カトレア', cat:'切り花'},
+  {no:3, name:'シンピジューム', cat:'切り花'},
+  {no:5, name:'デンファレ', cat:'切り花'},
+  {no:6, name:'フアレノ', cat:'切り花'},
+  {no:7, name:'エビデン', cat:'切り花'},
+  {no:8, name:'ディスバット', cat:'切り花'},
+  {no:9, name:'デンドロ', cat:'切り花'},
+  {no:10, name:'コギク', cat:'切り花'},
+  {no:11, name:'スプレーキク', cat:'切り花'},
+  {no:12, name:'シロキク', cat:'切り花'},
+  {no:13, name:'キギク', cat:'切り花'},
+  {no:14, name:'アカギク', cat:'切り花'},
+  {no:15, name:'バラ', cat:'切り花'},
+  {no:16, name:'カーネーション', cat:'切り花'},
+  {no:17, name:'SPカーネーション', cat:'切り花'},
+  {no:18, name:'ミニカーネーション', cat:'切り花'},
+  {no:19, name:'ダイアンサス', cat:'切り花'},
+  {no:20, name:'テッポウユリ', cat:'切り花'},
+  {no:21, name:'ユリオリエンタル', cat:'切り花'},
+  {no:22, name:'ユリアジアンティク', cat:'切り花'},
+  {no:23, name:'LAユリ', cat:'切り花'},
+  {no:24, name:'チューリップ', cat:'切り花'},
+  {no:25, name:'グラジオラス', cat:'切り花'},
+  {no:26, name:'アイリス', cat:'切り花'},
+  {no:27, name:'フリージア', cat:'切り花'},
+  {no:28, name:'スイセン', cat:'切り花'},
+  {no:29, name:'アマリリス', cat:'切り花'},
+  {no:30, name:'カラー', cat:'切り花'},
+  {no:31, name:'アリアム', cat:'切り花'},
+  {no:32, name:'アガパンサス', cat:'切り花'},
+  {no:33, name:'アルストロメリア', cat:'切り花'},
+  {no:34, name:'ショウブ', cat:'切り花'},
+  {no:35, name:'カキツ', cat:'切り花'},
+  {no:36, name:'リモニューム シヌアータ', cat:'切り花'},
+  {no:37, name:'リモニューム HB', cat:'切り花'},
+  {no:38, name:'アスター', cat:'切り花'},
+  {no:39, name:'ケイト', cat:'切り花'},
+  {no:40, name:'スイートピー', cat:'切り花'},
+  {no:41, name:'ストック', cat:'切り花'},
+  {no:42, name:'スナップ', cat:'切り花'},
+  {no:43, name:'ガーベラ', cat:'切り花'},
+  {no:44, name:'デルフィ', cat:'切り花'},
+  {no:45, name:'コスモス', cat:'切り花'},
+  {no:46, name:'リヤトリス', cat:'切り花'},
+  {no:47, name:'ブバリア', cat:'切り花'},
+  {no:48, name:'マーガレット', cat:'切り花'},
+  {no:49, name:'アンス', cat:'切り花'},
+  {no:50, name:'シャクヤク', cat:'切り花'},
+  {no:51, name:'ミヤコワスレ', cat:'切り花'},
+  {no:52, name:'キキョウ', cat:'切り花'},
+  {no:53, name:'ダリア', cat:'切り花'},
+  {no:54, name:'リンドウ', cat:'切り花'},
+  {no:55, name:'リシアンサス', cat:'切り花'},
+  {no:56, name:'カスミ', cat:'切り花'},
+  {no:57, name:'ナノハナ', cat:'切り花'},
+  {no:58, name:'キンセンカ', cat:'切り花'},
+  {no:59, name:'ネイティブフラワー', cat:'切り花'},
+  {no:60, name:'サンタンカ', cat:'切り花'},
+  {no:61, name:'エリンジューム', cat:'切り花'},
+  {no:62, name:'カンパニュラ', cat:'切り花'},
+  {no:63, name:'クジャクソウ', cat:'切り花'},
+  {no:64, name:'ソリダスター', cat:'切り花'},
+  {no:65, name:'アネモネ ラナン', cat:'切り花'},
+  {no:66, name:'レースフラワー', cat:'切り花'},
+  {no:67, name:'アコニタム', cat:'切り花'},
+  {no:68, name:'スカビオサ', cat:'切り花'},
+  {no:69, name:'グロリオサ', cat:'切り花'},
+  {no:70, name:'ストレリチア', cat:'切り花'},
+  {no:71, name:'ヘルコニア', cat:'切り花'},
+  {no:72, name:'アスチルベ', cat:'切り花'},
+  {no:73, name:'ユーフォルビア', cat:'切り花'},
+  {no:74, name:'ディスカス', cat:'切り花'},
+  {no:75, name:'イキシャ', cat:'切り花'},
+  {no:76, name:'アザミ', cat:'切り花'},
+  {no:77, name:'スミレ', cat:'切り花'},
+  {no:78, name:'ポピー', cat:'切り花'},
+  {no:79, name:'サンダーソニア', cat:'切り花'},
+  {no:80, name:'ニゲラ', cat:'切り花'},
+  {no:88, name:'クレマチス', cat:'切り花'},
+  {no:91, name:'エレムルス', cat:'切り花'},
+  {no:92, name:'トリテリア', cat:'切り花'},
+  {no:93, name:'ボタン', cat:'切り花'},
+  {no:100, name:'オオニソガラム', cat:'切り花'},
+  {no:110, name:'アマリリダセアエ', cat:'切り花'},
+  {no:130, name:'アネモネ', cat:'切り花'},
+  {no:160, name:'ウイキョウ', cat:'切り花'},
+  {no:190, name:'その他球根切り花', cat:'切り花'},
+  {no:200, name:'ヒヤシンス', cat:'切り花'},
+  {no:300, name:'セントーレア', cat:'切り花'},
+  {no:350, name:'ジンジャー', cat:'切り花'},
+  {no:360, name:'ホオヅキ', cat:'切り花'},
+  {no:390, name:'ハス', cat:'切り花'},
+  {no:400, name:'その他の草花', cat:'切り花'},
+  {no:401, name:'ヒマワリ', cat:'切り花'},
+  {no:402, name:'ユウギリソウ', cat:'切り花'},
+  {no:405, name:'マトリカリヤ', cat:'切り花'},
+  {no:406, name:'センニチコウ', cat:'切り花'},
+  {no:407, name:'ブプレリューム', cat:'切り花'},
+  {no:408, name:'オキシペタルム', cat:'切り花'},
+  {no:409, name:'クリスマスローズ', cat:'切り花'},
+  {no:410, name:'センリョウ', cat:'切り花'},
+  {no:412, name:'カボチャ', cat:'切り花'},
+  {no:420, name:'オモト', cat:'切り花'},
+  {no:500, name:'枝もの', cat:'切り花'},
+  {no:505, name:'ユーカリ', cat:'切り花'},
+  {no:510, name:'マツ', cat:'切り花'},
+  {no:520, name:'サクラ', cat:'切り花'},
+  {no:522, name:'ウメ', cat:'切り花'},
+  {no:525, name:'モモ', cat:'切り花'},
+  {no:530, name:'ボケ', cat:'切り花'},
+  {no:540, name:'柳類', cat:'切り花'},
+  {no:550, name:'檜葉・杉類', cat:'切り花'},
+  {no:560, name:'ツツジ', cat:'切り花'},
+  {no:570, name:'アカシア', cat:'切り花'},
+  {no:575, name:'ライラック', cat:'切り花'},
+  {no:580, name:'アジサイ', cat:'切り花'},
+  {no:590, name:'ヒペリカム', cat:'切り花'},
+  {no:680, name:'タケ', cat:'切り花'},
+  {no:690, name:'サカキ', cat:'切り花'},
+  {no:691, name:'ツクリサカキ', cat:'切り花'},
+  {no:692, name:'コウジンマツ', cat:'切り花'},
+  {no:695, name:'シキビ', cat:'切り花'},
+  {no:700, name:'ハモノ', cat:'切り花'},
+  {no:790, name:'ハショウブ', cat:'切り花'},
+  {no:800, name:'加工品', cat:'切り花'},
+  {no:850, name:'ドライフラワー', cat:'切り花'},
+  {no:900, name:'雑口', cat:'切り花'},
+  {no:999, name:'備考', cat:'切り花'},
+  {no:1100, name:'ヨウラン', cat:'鉢物'},
+  {no:1101, name:'カトレア', cat:'鉢物'},
+  {no:1102, name:'ファレノ', cat:'鉢物'},
+  {no:1103, name:'シンピジューム', cat:'鉢物'},
+  {no:1104, name:'デンドロ', cat:'鉢物'},
+  {no:1105, name:'オンシジューム', cat:'鉢物'},
+  {no:1106, name:'ミルトニア', cat:'鉢物'},
+  {no:1107, name:'フォーミー', cat:'鉢物'},
+  {no:1108, name:'バンダ', cat:'鉢物'},
+  {no:1109, name:'デンファレ', cat:'鉢物'},
+  {no:1120, name:'アナナス', cat:'鉢物'},
+  {no:1121, name:'デヘンバキア', cat:'鉢物'},
+  {no:1123, name:'ドラセナ', cat:'鉢物'},
+  {no:1125, name:'フィカス', cat:'鉢物'},
+  {no:1127, name:'フィロデンドロン', cat:'鉢物'},
+  {no:1130, name:'ヤシ', cat:'鉢物'},
+  {no:1133, name:'シダ', cat:'鉢物'},
+  {no:1135, name:'カンシュウチク', cat:'鉢物'},
+  {no:1136, name:'サボテン・タニク', cat:'鉢物'},
+  {no:1137, name:'カクタス', cat:'鉢物'},
+  {no:1140, name:'その他観葉植物', cat:'鉢物'},
+  {no:1141, name:'スパティフィラム', cat:'鉢物'},
+  {no:1142, name:'シェフレラ', cat:'鉢物'},
+  {no:1145, name:'アンスリウム', cat:'鉢物'},
+  {no:1150, name:'実付き物盆栽類', cat:'鉢物'},
+  {no:1151, name:'ツバキ', cat:'鉢物'},
+  {no:1152, name:'ボケ', cat:'鉢物'},
+  {no:1153, name:'ウメ', cat:'鉢物'},
+  {no:1156, name:'ツツジ', cat:'鉢物'},
+  {no:1157, name:'アジサイ', cat:'鉢物'},
+  {no:1159, name:'シャクナゲ', cat:'鉢物'},
+  {no:1161, name:'ハイビスカス', cat:'鉢物'},
+  {no:1162, name:'バラ', cat:'鉢物'},
+  {no:1163, name:'ブーゲンビレア', cat:'鉢物'},
+  {no:1164, name:'カーネーション', cat:'鉢物'},
+  {no:1165, name:'クレマチス', cat:'鉢物'},
+  {no:1166, name:'ボタン', cat:'鉢物'},
+  {no:1170, name:'その他草花鉢', cat:'鉢物'},
+  {no:1171, name:'シクラメン', cat:'鉢物'},
+  {no:1172, name:'球根類', cat:'鉢物'},
+  {no:1173, name:'インパーチエンス', cat:'鉢物'},
+  {no:1174, name:'イワタバコ', cat:'鉢物'},
+  {no:1175, name:'キク', cat:'鉢物'},
+  {no:1176, name:'ペチュニア', cat:'鉢物'},
+  {no:1177, name:'サイネリア', cat:'鉢物'},
+  {no:1179, name:'プリムラ', cat:'鉢物'},
+  {no:1180, name:'ベゴニア', cat:'鉢物'},
+  {no:1181, name:'ペラルゴニウム', cat:'鉢物'},
+  {no:1182, name:'ポインセチア', cat:'鉢物'},
+  {no:1183, name:'ポインセチア（苗）', cat:'鉢物'},
+  {no:1185, name:'カンヨウ', cat:'鉢物'},
+  {no:1190, name:'パンジー', cat:'鉢物'},
+  {no:1191, name:'ペチュニア', cat:'鉢物'},
+  {no:1192, name:'ニチニチソウ', cat:'鉢物'},
+  {no:1194, name:'シクラメン', cat:'鉢物'},
+  {no:1195, name:'カーネーション', cat:'鉢物'},
+  {no:1196, name:'野菜苗', cat:'鉢物'},
+  {no:1197, name:'苗', cat:'鉢物'},
+  {no:1198, name:'花木根巻物', cat:'鉢物'},
+  {no:1199, name:'球根・種苗', cat:'鉢物'},
+  {no:1200, name:'鉢物材料', cat:'鉢物'},
+];
+
+// =====================================================================
+// アプリ状態
+// =====================================================================
+let allFlowers = FLOWERS;
+let queue=[], current=null, inputVal='', scoreOk=0, scoreNg=0;
+let filterMode='all';
+
+function getSVG(no){ return S[svgMap[no]] || S.default_kiri; }
+
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function setFilter(mode){
+  filterMode = mode;
+  ['all','切り花','鉢物'].forEach(m=>{
+    const id = m==='all'?'fb-all': m==='切り花'?'fb-kiri':'fb-hachi';
+    document.getElementById(id).classList.toggle('active', m===mode);
+  });
+  startQuiz();
+}
+
+function startQuiz(){
+  const base = filterMode==='all' ? FLOWERS : FLOWERS.filter(f=>f.cat===filterMode);
+  queue = shuffle(base);
+  scoreOk=0; scoreNg=0; inputVal='';
+  showScreen('q'); updateScore(); nextQ();
+}
+
+function nextQ(){
+  if(queue.length===0){ showDone(); return; }
+  current=queue.shift(); inputVal='';
+  renderQ(); showScreen('q');
+}
+
+function renderQ(){
+  document.getElementById('fn').textContent = current.name;
+  document.getElementById('fc').textContent = current.cat;
+  document.getElementById('img-wrap').innerHTML = getSVG(current.no);
+  updateInputDisp(); updateProgress();
+}
+
+function updateProgress(){
+  const base = filterMode==='all' ? FLOWERS : FLOWERS.filter(f=>f.cat===filterMode);
+  const total = base.length;
+  const done  = total - queue.length;
+  const pct   = total ? (done/total*100) : 0;
+  document.getElementById('pf').style.width = pct+'%';
+  document.getElementById('pt').textContent = done+'/'+total;
+}
+
+function updateInputDisp(){
+  const el=document.getElementById('id');
+  const btn=document.getElementById('ba');
+  if(inputVal===''){el.innerHTML='<span class="cursor"></span>';el.classList.remove('has-val');btn.disabled=true;}
+  else{el.innerHTML=inputVal+'<span class="cursor"></span>';el.classList.add('has-val');btn.disabled=false;}
+}
+
+function pn(n){ if(inputVal.length>=4)return; inputVal+=n; updateInputDisp(); }
+function pb(){ if(!inputVal.length)return; inputVal=inputVal.slice(0,-1); updateInputDisp(); }
+
+function checkAns(){
+  if(!current||!inputVal)return;
+  const ok = parseInt(inputVal,10)===current.no;
+  if(ok) scoreOk++; else scoreNg++;
+  renderResult(ok); showScreen('r');
+}
+
+function renderResult(ok){
+  document.getElementById('rb').textContent = ok?'✅':'❌';
+  const lbl=document.getElementById('rl');
+  lbl.textContent = ok?'正　解':'不正解';
+  lbl.className = 'result-label '+(ok?'ok':'ng');
+  document.getElementById('ri').innerHTML = getSVG(current.no);
+  const det=document.getElementById('rd');
+  if(ok){
+    det.innerHTML=`<div class="r-name">${current.name}</div>
+      <div style="margin-top:4px;font-size:.75rem;color:var(--text-sub)">${current.cat}</div>
+      <div style="margin-top:10px;">コード番号 <span class="r-code">${current.no}</span></div>`;
+  } else {
+    det.innerHTML=`<div class="r-name">${current.name}</div>
+      <div style="margin-top:4px;font-size:.75rem;color:var(--text-sub)">${current.cat}</div>
+      <div class="r-ans-ng" style="margin-top:10px;">あなたの回答：${inputVal}</div>
+      <div style="margin-top:5px;font-size:.85rem;color:var(--text-sub)">正解のコード</div>
+      <div class="r-correct-code">${current.no}</div>`;
+  }
+  updateScore();
+}
+
+function updateScore(){
+  document.getElementById('sok').textContent=scoreOk;
+  document.getElementById('sng').textContent=scoreNg;
+  document.getElementById('stot').textContent=scoreOk+scoreNg;
+}
+
+function showDone(){
+  const tot=scoreOk+scoreNg, pct=tot?Math.round(scoreOk/tot*100):0;
+  document.getElementById('ds').textContent=`${tot}問中 ${scoreOk}問正解（${pct}%）`;
+  const base = filterMode==='all' ? FLOWERS : FLOWERS.filter(f=>f.cat===filterMode);
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('pt').textContent=base.length+'/'+base.length;
+  showScreen('done');
+}
+
+function showScreen(s){
+  document.getElementById('sq').style.display = s==='q'?'flex':'none';
+  document.getElementById('sr').style.display = s==='r'?'flex':'none';
+  document.getElementById('sd').style.display = s==='done'?'flex':'none';
+}
+
+// キーボード対応
+document.addEventListener('keydown',e=>{
+  const isQ=document.getElementById('sq').style.display!=='none';
+  const isR=document.getElementById('sr').style.display!=='none';
+  if(isQ){
+    if(e.key>='0'&&e.key<='9') pn(e.key);
+    else if(e.key==='Backspace') pb();
+    else if(e.key==='Enter') checkAns();
+  } else if(isR){
+    if(e.key==='Enter') nextQ();
+  }
+});
+
+// 起動
+startQuiz();
+</script>
+</body>
+</html>
