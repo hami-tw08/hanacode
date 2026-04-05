@@ -117,8 +117,83 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
   border:none;border-radius:12px;font-family:'Shippori Mincho',serif;font-size:1.05rem;
   font-weight:700;letter-spacing:.1em;cursor:pointer;transition:background .15s}
 .btn-restart:hover{background:#5a3510}
+
+/* ── セット選択画面 ── */
+#s-select{display:flex;flex-direction:column;width:100%;max-width:480px;padding-bottom:24px}
+.set-header{padding:14px 16px 8px;text-align:center}
+.set-header-title{font-size:1rem;font-weight:700;color:var(--accent);letter-spacing:.05em}
+.set-header-sub{font-size:.75rem;color:var(--text-sub);margin-top:3px}
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px}
+.set-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;
+  padding:12px 10px;cursor:pointer;transition:all .15s;position:relative;min-height:80px;
+  display:flex;flex-direction:column;gap:3px}
+.set-card:hover:not(.locked){background:var(--accent-light);border-color:var(--accent)}
+.set-card.passed{border-color:#2d7a4f;background:#f0faf4}
+.set-card.locked{opacity:.45;cursor:default;background:#f4f0ec}
+.set-num{font-size:.82rem;font-weight:700;color:var(--accent)}
+.set-card.passed .set-num{color:#2d7a4f}
+.set-range{font-size:.68rem;color:var(--text-sub);line-height:1.3;margin-top:1px}
+.set-count{font-size:.72rem;color:var(--text-sub)}
+.set-pct{font-size:.85rem;font-weight:700;margin-top:2px}
+.set-pct.ok{color:#2d7a4f}
+.set-pct.ng{color:#9c2a2a}
+.lock-icon{position:absolute;top:8px;right:10px;font-size:1rem;opacity:.6}
+.btn-all-test{margin:16px 14px 0;padding:12px;border-radius:12px;border:1.5px solid var(--border);
+  background:var(--surface2);font-family:'Noto Serif JP',serif;font-size:.85rem;
+  color:var(--text-sub);cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.btn-all-test:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+
+/* ── 学習フェーズ ── */
+#s-learn{display:none;flex-direction:column;width:100%;max-width:480px;align-items:stretch}
+.learn-bar{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px 4px;gap:8px}
+.learn-badge{background:var(--accent2);color:#fff8ee;font-size:.72rem;
+  padding:3px 10px;border-radius:20px;letter-spacing:.04em}
+#learn-prog{font-size:.82rem;color:var(--text-sub);font-family:'DM Mono',monospace}
+.learn-code-wrap{background:var(--surface);border:2px solid var(--accent-light);
+  border-radius:14px;margin:10px 14px 0;padding:14px 16px;text-align:center}
+.learn-code-label{font-size:.75rem;color:var(--text-sub);letter-spacing:.06em;margin-bottom:6px}
+.learn-code{font-size:2.6rem;font-weight:700;color:var(--accent);font-family:'DM Mono',monospace;
+  letter-spacing:.1em}
+.learn-nav{display:flex;gap:10px;padding:12px 14px 0}
+.btn-learn-prev,.btn-learn-next{flex:1;padding:11px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--num-bg);
+  font-family:'Noto Serif JP',serif;font-size:.88rem;color:var(--text-sub);
+  cursor:pointer;transition:all .15s}
+.btn-learn-prev:hover:not(:disabled),.btn-learn-next:hover{background:var(--accent-light);border-color:var(--accent)}
+.btn-learn-prev:disabled{opacity:.3;cursor:default}
+.btn-start-test{margin:12px 14px 0;padding:13px;border-radius:12px;
+  background:var(--accent);color:#fff8ee;border:none;
+  font-family:'Noto Serif JP',serif;font-size:.92rem;font-weight:700;
+  cursor:pointer;transition:background .15s;letter-spacing:.06em}
+.btn-start-test:hover{background:#5a3510}
+.btn-back-select{display:block;margin:8px auto 12px;background:none;border:none;
+  font-family:'Noto Serif JP',serif;font-size:.8rem;color:var(--text-sub);
+  cursor:pointer;letter-spacing:.04em;padding:6px 12px;border-radius:8px}
+.btn-back-select:hover{background:var(--accent-light);color:var(--accent)}
+
+/* ── テスト画面のセットラベル ── */
+.set-label-bar{text-align:center;font-size:.78rem;color:var(--text-sub);
+  padding:8px 16px 0;letter-spacing:.04em}
+
+/* ── 完了画面の追加要素 ── */
+.done-pass{text-align:center;padding:0 20px;font-size:.85rem;margin-top:4px}
+.pass-badge{color:#2d7a4f;font-weight:700}
+.fail-badge{color:#9c2a2a;line-height:1.6}
+.done-actions{display:flex;flex-direction:column;gap:10px;padding:0 20px;width:100%;margin-top:6px}
+.btn-learn-again,.btn-back-select2{width:100%;padding:12px;border-radius:12px;
+  border:1.5px solid var(--border);background:var(--num-bg);
+  font-family:'Noto Serif JP',serif;font-size:.88rem;color:var(--text-sub);
+  cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.btn-learn-again:hover,.btn-back-select2:hover{background:var(--accent-light);border-color:var(--accent)}
+
+/* ── main-wrap ── */
+#main-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;flex:1}
+#sq,#sr,#sd,#s-select,#s-learn{display:none;flex-direction:column;flex:1}
+
 </style>
 </head>
+
 <body>
 
 <div class="hdr">
@@ -129,16 +204,51 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
   </div>
 </div>
 
-<div class="filter-bar">
-  <button class="filter-btn active" id="fb-all"   onclick="setFilter('all')">全て (190)</button>
-  <button class="filter-btn"        id="fb-kiri"  onclick="setFilter('切り花')">切り花 (130)</button>
-  <button class="filter-btn"        id="fb-hachi" onclick="setFilter('鉢物')">鉢物 (60)</button>
-</div>
+<div id="main-wrap">
 
-<div class="main">
+  <!-- ★ セット選択画面 -->
+  <div id="s-select">
+    <div class="filter-bar" style="padding:12px 14px 0">
+      <button class="filter-btn active" id="fb-all"   onclick="setFilter('all')">全て (190)</button>
+      <button class="filter-btn"        id="fb-kiri"  onclick="setFilter('切り花')">切り花 (130)</button>
+      <button class="filter-btn"        id="fb-hachi" onclick="setFilter('鉢物')">鉢物 (60)</button>
+    </div>
+    <div class="set-header">
+      <div class="set-header-title">セットを選んで学習</div>
+      <div class="set-header-sub">各セット20問 ・ 正答率80%以上で合格 🎖</div>
+    </div>
+    <div class="set-grid" id="set-grid"></div>
+    <button class="btn-all-test" onclick="startAllTest()">📋 全問テストモード</button>
+  </div>
 
-  <!-- 問題画面 -->
-  <div id="sq">
+  <!-- ★ 学習フェーズ（フラッシュカード） -->
+  <div id="s-learn" style="display:none">
+    <div class="learn-bar">
+      <span id="learn-prog">1 / 20</span>
+      <span class="learn-badge">学習モード</span>
+    </div>
+    <div class="flower-card">
+      <div class="flower-img" id="learn-img"></div>
+      <div class="flower-info">
+        <div class="flower-name" id="learn-name">—</div>
+        <span class="flower-cat" id="learn-cat"></span>
+      </div>
+    </div>
+    <div class="learn-code-wrap">
+      <div class="learn-code-label">コード番号</div>
+      <div class="learn-code" id="learn-code">—</div>
+    </div>
+    <div class="learn-nav">
+      <button class="btn-learn-prev" id="btn-lprev" onclick="learnPrev()">← 前へ</button>
+      <button class="btn-learn-next" id="btn-lnext" onclick="learnNext()">次へ →</button>
+    </div>
+    <button class="btn-start-test" onclick="startSetTest()">✏️ このセットをテスト</button>
+    <button class="btn-back-select" onclick="showSelect()">← セット選択に戻る</button>
+  </div>
+
+  <!-- テスト画面（問題） -->
+  <div id="sq" style="display:none">
+    <div class="set-label-bar" id="set-label-bar"></div>
     <div class="flower-card">
       <div class="flower-img" id="img-wrap"></div>
       <div class="flower-info">
@@ -163,10 +273,12 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
       <button class="num zero" onclick="pn('0')">0</button>
       <button class="num del"  onclick="pb()">⌫</button>
     </div>
+    <button class="btn-back-select" onclick="showSelect()" style="margin:6px auto 12px">← セット選択に戻る</button>
   </div>
 
   <!-- 結果画面 -->
-  <div id="sr">
+  <div id="sr" style="display:none">
+    <div class="set-label-bar" id="set-label-bar-r"></div>
     <div class="result-card">
       <div class="result-top">
         <div class="result-badge" id="rb"></div>
@@ -183,17 +295,23 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
     <button class="btn-next" onclick="nextQ()">次へ →</button>
   </div>
 
-  <!-- 完了画面 -->
-  <div id="sd">
-    <div class="done-em">🎉</div>
-    <div class="done-title">全問完了！</div>
+  <!-- セット完了画面 -->
+  <div id="sd" style="display:none">
+    <div class="done-em" id="done-em">🎉</div>
+    <div class="done-title" id="done-title">セット完了！</div>
     <div class="done-score" id="ds"></div>
-    <button class="btn-restart" onclick="startQuiz()">もう一度</button>
+    <div class="done-pass" id="done-pass"></div>
+    <div class="done-actions">
+      <button class="btn-restart" onclick="retrySet()">🔄 もう一度</button>
+      <button class="btn-learn-again" onclick="startLearnPhase()">📖 再学習</button>
+      <button class="btn-back-select2" onclick="showSelect()">← セット選択</button>
+    </div>
   </div>
 
-</div><!-- /main -->
+</div><!-- /main-wrap -->
 
 <script>
+
 // =====================================================================
 // SVG イラスト（リアル描写版・アプリ内蔵）
 // =====================================================================
@@ -1590,7 +1708,6 @@ S.kogiku = S.margaret;
 S.ran_dendro2 = S.ran_dendro2 || S.ran_dendro;
 
 
-// =====================================================================
 // 花コード → SVGキー マッピング（190件全て）
 // =====================================================================
 const svgMap = {
@@ -1843,28 +1960,142 @@ const FLOWERS = [
 // =====================================================================
 // アプリ状態
 // =====================================================================
-let allFlowers = FLOWERS;
-let queue=[], current=null, inputVal='', scoreOk=0, scoreNg=0;
-let filterMode='all';
-
 function getSVG(no){ return S[svgMap[no]] || S.default_kiri; }
-
 function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
+// ── 状態 ──────────────────────────────────────────
+const SET_SIZE = 20;
+let filterMode = 'all';
+let allFlowers = FLOWERS;
+let setResults  = {};   // { setIdx: { ok, ng, passed } }
+
+// テスト状態
+let currentSetIdx = -1; // -1 = 全問テスト
+let queue = [], current = null, inputVal = '', scoreOk = 0, scoreNg = 0;
+let setFlowers = []; // 今のセットの全花
+let isAllTest = false;
+
+// 学習フェーズ状態
+let learnList = [], learnIdx = 0;
+
+// ── フィルター ────────────────────────────────────
 function setFilter(mode){
   filterMode = mode;
   ['all','切り花','鉢物'].forEach(m=>{
     const id = m==='all'?'fb-all': m==='切り花'?'fb-kiri':'fb-hachi';
     document.getElementById(id).classList.toggle('active', m===mode);
   });
-  startQuiz();
+  allFlowers = filterMode==='all' ? FLOWERS : FLOWERS.filter(f=>f.cat===filterMode);
+  setResults = {};
+  buildSetGrid();
 }
 
-function startQuiz(){
-  const base = filterMode==='all' ? FLOWERS : FLOWERS.filter(f=>f.cat===filterMode);
-  queue = shuffle(base);
+// ── セット選択画面 ────────────────────────────────
+function showSelect(){
+  showScreen('select');
+  buildSetGrid();
+  document.getElementById('pf').style.width='0%';
+  document.getElementById('pt').textContent='';
+}
+
+function buildSetGrid(){
+  const grid = document.getElementById('set-grid');
+  const sets = makeSets();
+  const total = sets.length;
+  let passedCount = 0;
+  grid.innerHTML = sets.map((s,i)=>{
+    const res = setResults[i] || {};
+    const passed = res.passed || false;
+    if(passed) passedCount++;
+    const pct = (res.ok!==undefined) ? Math.round(res.ok/(res.ok+res.ng)*100) : null;
+    const locked = i>0 && !(setResults[i-1]||{}).passed;
+    const cls = passed?'set-card passed': locked?'set-card locked':'set-card';
+    const badge = passed?'🎖':'';
+    const pctStr = pct!==null ? `<span class="set-pct ${passed?'ok':'ng'}">${pct}%</span>` : '';
+    const lockIcon = locked ? '<div class="lock-icon">🔒</div>' : '';
+    return `<div class="${cls}" onclick="${locked?'':'selectSet('+i+')'}" data-set="${i}">
+      ${lockIcon}
+      <div class="set-num">セット ${i+1} ${badge}</div>
+      <div class="set-range">${s[0].name} 〜 ${s[s.length-1].name}</div>
+      <div class="set-count">${s.length}問</div>
+      ${pctStr}
+    </div>`;
+  }).join('');
+  // 全体進捗
+  const pct = total ? Math.round(passedCount/total*100) : 0;
+  document.getElementById('pf').style.width = pct+'%';
+  document.getElementById('pt').textContent = passedCount+'/'+total+' セット合格';
+}
+
+function makeSets(){
+  const sets = [];
+  for(let i=0;i<allFlowers.length;i+=SET_SIZE){
+    sets.push(allFlowers.slice(i, i+SET_SIZE));
+  }
+  return sets;
+}
+
+function selectSet(idx){
+  currentSetIdx = idx;
+  isAllTest = false;
+  setFlowers = makeSets()[idx];
+  startLearnPhase();
+}
+
+// ── 学習フェーズ ──────────────────────────────────
+function startLearnPhase(){
+  learnList = [...setFlowers];
+  learnIdx = 0;
+  showScreen('learn');
+  renderLearnCard();
+}
+
+function renderLearnCard(){
+  const f = learnList[learnIdx];
+  document.getElementById('learn-img').innerHTML = getSVG(f.no);
+  document.getElementById('learn-name').textContent = f.name;
+  document.getElementById('learn-cat').textContent = f.cat;
+  document.getElementById('learn-code').textContent = f.no;
+  document.getElementById('learn-prog').textContent = (learnIdx+1)+' / '+learnList.length;
+  document.getElementById('btn-lprev').disabled = (learnIdx===0);
+  document.getElementById('btn-lnext').textContent = learnIdx===learnList.length-1 ? '✏️ テストへ' : '次へ →';
+}
+
+function learnNext(){
+  if(learnIdx < learnList.length-1){
+    learnIdx++;
+    renderLearnCard();
+  } else {
+    startSetTest();
+  }
+}
+function learnPrev(){
+  if(learnIdx>0){ learnIdx--; renderLearnCard(); }
+}
+
+// ── テストフェーズ ────────────────────────────────
+function startSetTest(){
+  queue = shuffle([...setFlowers]);
   scoreOk=0; scoreNg=0; inputVal='';
-  showScreen('q'); updateScore(); nextQ();
+  const lbl = `セット ${currentSetIdx+1} テスト`;
+  document.getElementById('set-label-bar').textContent = lbl;
+  document.getElementById('set-label-bar-r').textContent = lbl;
+  updateScore();
+  showScreen('q');
+  nextQ();
+}
+
+function startAllTest(){
+  currentSetIdx = -1;
+  isAllTest = true;
+  setFlowers = allFlowers;
+  queue = shuffle([...allFlowers]);
+  scoreOk=0; scoreNg=0; inputVal='';
+  document.getElementById('set-label-bar').textContent = '全問テストモード';
+  document.getElementById('set-label-bar-r').textContent = '全問テストモード';
+  updateScore();
+  showScreen('q');
+  nextQ();
 }
 
 function nextQ(){
@@ -1881,8 +2112,7 @@ function renderQ(){
 }
 
 function updateProgress(){
-  const base = filterMode==='all' ? FLOWERS : FLOWERS.filter(f=>f.cat===filterMode);
-  const total = base.length;
+  const total = setFlowers.length;
   const done  = total - queue.length;
   const pct   = total ? (done/total*100) : 0;
   document.getElementById('pf').style.width = pct+'%';
@@ -1935,34 +2165,63 @@ function updateScore(){
 
 function showDone(){
   const tot=scoreOk+scoreNg, pct=tot?Math.round(scoreOk/tot*100):0;
-  document.getElementById('ds').textContent=`${tot}問中 ${scoreOk}問正解（${pct}%）`;
-  const base = filterMode==='all' ? FLOWERS : FLOWERS.filter(f=>f.cat===filterMode);
+  const passed = pct>=80;
+
+  // セット結果を記録
+  if(!isAllTest && currentSetIdx>=0){
+    setResults[currentSetIdx] = { ok:scoreOk, ng:scoreNg, passed };
+    // 次のセットを自動解放（何もしなくてもbuildSetGridで解放される）
+  }
+
+  document.getElementById('done-em').textContent = passed ? '🎖' : (pct>=60?'😊':'💪');
+  document.getElementById('done-title').textContent = isAllTest ? '全問テスト完了！' : `セット ${currentSetIdx+1} 完了！`;
+  document.getElementById('ds').textContent = `${tot}問中 ${scoreOk}問正解（${pct}%）`;
+
+  const passEl = document.getElementById('done-pass');
+  if(isAllTest){
+    passEl.textContent='';
+  } else if(passed){
+    passEl.innerHTML='<span class="pass-badge">🎖 合格！次のセットが解放されました</span>';
+  } else {
+    passEl.innerHTML=`<span class="fail-badge">合格ライン80%まであと${80-pct}%<br>もう一度チャレンジしてみましょう</span>`;
+  }
+
   document.getElementById('pf').style.width='100%';
-  document.getElementById('pt').textContent=base.length+'/'+base.length;
+  document.getElementById('pt').textContent=tot+'/'+tot;
   showScreen('done');
 }
 
+function retrySet(){
+  if(isAllTest) startAllTest();
+  else startSetTest();
+}
+
 function showScreen(s){
-  document.getElementById('sq').style.display = s==='q'?'flex':'none';
-  document.getElementById('sr').style.display = s==='r'?'flex':'none';
-  document.getElementById('sd').style.display = s==='done'?'flex':'none';
+  ['select','learn','q','r','done'].forEach(id=>{
+    const el=document.getElementById(id==='select'?'s-select':id==='learn'?'s-learn':id==='q'?'sq':id==='r'?'sr':'sd');
+    if(el) el.style.display = s===id?'flex':'none';
+  });
 }
 
 // キーボード対応
 document.addEventListener('keydown',e=>{
   const isQ=document.getElementById('sq').style.display!=='none';
   const isR=document.getElementById('sr').style.display!=='none';
+  const isL=document.getElementById('s-learn').style.display!=='none';
   if(isQ){
     if(e.key>='0'&&e.key<='9') pn(e.key);
     else if(e.key==='Backspace') pb();
     else if(e.key==='Enter') checkAns();
   } else if(isR){
     if(e.key==='Enter') nextQ();
+  } else if(isL){
+    if(e.key==='ArrowRight'||e.key===' ') learnNext();
+    else if(e.key==='ArrowLeft') learnPrev();
   }
 });
 
 // 起動
-startQuiz();
+showSelect();
 </script>
 </body>
 </html>
