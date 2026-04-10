@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>花コード 暗記トレーナー</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Shippori+Mincho:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>🌸 花コード暗記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Shippori+Mincho:wght@700&family=DM+Mono&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#faf6f0;--surface:#fff;--surface2:#f5ede0;--accent:#7c4f2a;--accent2:#c8893a;
@@ -16,7 +17,7 @@
 body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
   min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
 
-/* ── ヘッダー ── */
+/* ヘッダー */
 .hdr{width:100%;background:var(--accent);padding:10px 16px;display:flex;align-items:center;gap:10px}
 .hdr-title{font-family:'Shippori Mincho',serif;font-size:1rem;font-weight:700;color:#fff8ee;
   white-space:nowrap;letter-spacing:.08em}
@@ -25,259 +26,322 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
 .prog-fill{height:100%;background:var(--accent2);border-radius:3px;transition:width .4s ease}
 .prog-txt{font-size:.72rem;color:#f5d9a8;white-space:nowrap;font-family:'DM Mono',monospace}
 
-/* フィルターバー */
-.filter-bar{width:100%;max-width:480px;display:flex;gap:6px;padding:10px 14px 0}
+/* メインラップ */
+#main-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;flex:1}
+
+/* ── セット選択 ── */
+#s-select{display:none;flex-direction:column;width:100%;padding-bottom:28px}
+.filter-bar{display:flex;gap:6px;padding:10px 14px 0}
 .filter-btn{flex:1;padding:7px 4px;border-radius:8px;border:1.5px solid var(--border);
   background:var(--num-bg);font-family:'Noto Serif JP',serif;font-size:.78rem;
   color:var(--text-sub);cursor:pointer;transition:all .15s;letter-spacing:.04em}
 .filter-btn.active{background:var(--accent);color:#fff8ee;border-color:var(--accent)}
 .filter-btn:hover:not(.active){background:var(--accent-light)}
-
-/* メイン */
-.main{width:100%;max-width:480px;display:flex;flex-direction:column;flex:1}
-#sq{display:flex;flex-direction:column;flex:1}
-#sr{display:none;flex-direction:column;flex:1}
-
-/* 花カード */
-.flower-card{background:var(--surface);margin:10px 14px 0;border-radius:16px;
-  border:1.5px solid var(--border);overflow:hidden;box-shadow:0 4px 20px var(--shadow)}
-.flower-img{width:100%;height:180px;background:var(--surface2);display:flex;
-  align-items:center;justify-content:center;overflow:hidden}
-.flower-img svg{width:100%;height:100%}
-.flower-info{padding:10px 18px 12px;text-align:center;border-top:1px solid var(--accent-light)}
-.flower-name{font-family:'Shippori Mincho',serif;font-size:1.45rem;font-weight:700;
-  color:var(--accent);letter-spacing:.08em;line-height:1.3}
-.flower-cat{display:inline-block;margin-top:5px;font-size:.68rem;background:var(--accent-light);
-  color:var(--accent);padding:2px 10px;border-radius:99px;font-weight:600;letter-spacing:.04em}
-
-/* 入力エリア */
-.input-area{margin:10px 14px 0;display:flex;gap:8px;align-items:stretch}
-.input-disp{flex:1;background:var(--surface);border:2px solid var(--border);border-radius:12px;
-  font-family:'DM Mono',monospace;font-size:1.9rem;font-weight:500;color:var(--accent);
-  text-align:center;padding:8px 10px;letter-spacing:.25em;min-height:60px;
-  display:flex;align-items:center;justify-content:center;
-  transition:border-color .2s;box-shadow:inset 0 2px 8px rgba(100,60,20,.06)}
-.input-disp.has-val{border-color:var(--accent2)}
-.cursor{display:inline-block;width:2px;height:1.25em;background:var(--accent);
-  margin-left:2px;animation:blink 1s step-end infinite;vertical-align:middle}
-@keyframes blink{50%{opacity:0}}
-.btn-ans{background:var(--accent);color:#fff8ee;border:none;border-radius:12px;
-  font-family:'Noto Serif JP',serif;font-size:.95rem;font-weight:600;padding:0 18px;
-  cursor:pointer;letter-spacing:.06em;transition:background .15s,transform .1s;white-space:nowrap}
-.btn-ans:active{transform:scale(.95)}.btn-ans:hover{background:#5a3510}
-.btn-ans:disabled{background:var(--border);cursor:default}
-
-/* テンキー */
-.numpad{margin:8px 14px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.num{background:var(--num-bg);border:1.5px solid var(--num-border);border-radius:12px;
-  font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;color:var(--text);
-  padding:13px 0;cursor:pointer;transition:background .1s,transform .08s;
-  box-shadow:0 2px 6px var(--shadow);text-align:center;user-select:none}
-.num:active{transform:scale(.92);background:var(--accent-light)}
-.num:hover{background:var(--accent-light)}
-.num.zero{grid-column:1/3}
-.num.del{background:#fde8e8;border-color:#e0a0a0;color:var(--wrong);font-size:1.05rem}
-.num.del:hover{background:#fbd0d0}
-
-/* 結果画面 */
-.result-card{margin:10px 14px 0;border-radius:16px;overflow:hidden;border:1.5px solid var(--border);
-  box-shadow:0 4px 20px var(--shadow);flex:1;display:flex;flex-direction:column}
-.result-top{padding:20px 20px 16px;display:flex;flex-direction:column;align-items:center;
-  gap:10px;background:var(--surface);flex:1}
-.result-badge{font-size:2.8rem;line-height:1}
-.result-label{font-family:'Shippori Mincho',serif;font-size:1.7rem;font-weight:700;letter-spacing:.12em}
-.result-label.ok{color:var(--correct)}.result-label.ng{color:var(--wrong)}
-.result-img{width:120px;height:120px;border-radius:12px;overflow:hidden;
-  border:2px solid var(--border);background:var(--surface2);
-  display:flex;align-items:center;justify-content:center}
-.result-img svg{width:100%;height:100%}
-.result-detail{text-align:center;line-height:1.85}
-.r-name{font-family:'Shippori Mincho',serif;font-size:1.35rem;font-weight:700;color:var(--accent)}
-.r-code{font-family:'DM Mono',monospace;font-size:1.25rem;color:var(--correct);font-weight:600}
-.r-ans-ng{font-family:'DM Mono',monospace;font-size:1.05rem;color:var(--wrong)}
-.r-correct-code{font-family:'DM Mono',monospace;font-size:1.65rem;font-weight:700;color:var(--wrong)}
-.score-bar{background:var(--surface2);border-top:1px solid var(--border);
-  padding:9px 20px;display:flex;justify-content:space-between;
-  font-size:.8rem;color:var(--text-sub);font-family:'DM Mono',monospace}
-.sc-ok{color:var(--correct);font-weight:700}.sc-ng{color:var(--wrong);font-weight:700}
-.btn-next{margin:8px 14px 14px;display:block;width:calc(100% - 28px);padding:15px;
-  background:var(--accent);color:#fff8ee;border:none;border-radius:12px;
-  font-family:'Shippori Mincho',serif;font-size:1.05rem;font-weight:700;letter-spacing:.12em;
-  cursor:pointer;transition:background .15s,transform .1s;box-shadow:0 4px 12px var(--shadow)}
-.btn-next:hover{background:#5a3510}.btn-next:active{transform:scale(.97)}
-
-/* 完了画面 */
-#sd{display:none;flex-direction:column;align-items:center;justify-content:center;
-  flex:1;padding:40px 20px;text-align:center;gap:14px}
-.done-em{font-size:3.8rem}
-.done-title{font-family:'Shippori Mincho',serif;font-size:1.7rem;font-weight:700;
-  color:var(--accent);letter-spacing:.1em}
-.done-score{font-family:'DM Mono',monospace;font-size:1.1rem;color:var(--text-sub)}
-.btn-restart{margin-top:8px;padding:13px 36px;background:var(--accent);color:#fff8ee;
-  border:none;border-radius:12px;font-family:'Shippori Mincho',serif;font-size:1.05rem;
-  font-weight:700;letter-spacing:.1em;cursor:pointer;transition:background .15s}
-.btn-restart:hover{background:#5a3510}
-
-/* ── セット選択画面 ── */
-#s-select{display:flex;flex-direction:column;width:100%;max-width:480px;padding-bottom:24px}
 .set-header{padding:14px 16px 8px;text-align:center}
 .set-header-title{font-size:1rem;font-weight:700;color:var(--accent);letter-spacing:.05em}
-.set-header-sub{font-size:.75rem;color:var(--text-sub);margin-top:3px}
-.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px}
+.set-header-sub{font-size:.74rem;color:var(--text-sub);margin-top:3px}
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 14px}
 .set-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;
-  padding:12px 10px;cursor:pointer;transition:all .15s;position:relative;min-height:80px;
-  display:flex;flex-direction:column;gap:3px}
+  padding:12px 10px;cursor:pointer;transition:all .15s;position:relative;
+  display:flex;flex-direction:column;gap:3px;min-height:82px}
 .set-card:hover:not(.locked){background:var(--accent-light);border-color:var(--accent)}
 .set-card.passed{border-color:#2d7a4f;background:#f0faf4}
-.set-card.locked{opacity:.45;cursor:default;background:#f4f0ec}
 .set-num{font-size:.82rem;font-weight:700;color:var(--accent)}
 .set-card.passed .set-num{color:#2d7a4f}
-.set-range{font-size:.68rem;color:var(--text-sub);line-height:1.3;margin-top:1px}
-.set-count{font-size:.72rem;color:var(--text-sub)}
-.set-pct{font-size:.85rem;font-weight:700;margin-top:2px}
-.set-pct.ok{color:#2d7a4f}
-.set-pct.ng{color:#9c2a2a}
-.lock-icon{position:absolute;top:8px;right:10px;font-size:1rem;opacity:.6}
-.btn-all-test{margin:16px 14px 0;padding:12px;border-radius:12px;border:1.5px solid var(--border);
-  background:var(--surface2);font-family:'Noto Serif JP',serif;font-size:.85rem;
-  color:var(--text-sub);cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.set-range{font-size:.66rem;color:var(--text-sub);line-height:1.35;margin-top:1px}
+.set-count{font-size:.7rem;color:var(--text-sub)}
+.set-pct{font-size:.84rem;font-weight:700;margin-top:2px}
+.set-pct.ok{color:#2d7a4f}.set-pct.ng{color:#9c2a2a}
+.lock-icon{position:absolute;top:8px;right:9px;font-size:.95rem;opacity:.5}
+.btn-all-test{margin:14px 14px 0;padding:12px;border-radius:12px;
+  border:1.5px solid var(--border);background:var(--surface2);
+  font-family:'Noto Serif JP',serif;font-size:.84rem;color:var(--text-sub);
+  cursor:pointer;transition:all .15s;letter-spacing:.04em}
 .btn-all-test:hover{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
 
 /* ── 学習フェーズ ── */
-#s-learn{display:none;flex-direction:column;width:100%;max-width:480px;align-items:stretch}
-.learn-bar{display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px 4px;gap:8px}
-.learn-badge{background:var(--accent2);color:#fff8ee;font-size:.72rem;
+#s-learn{display:none;flex-direction:column;width:100%;max-width:480px}
+.learn-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 4px}
+.learn-badge{background:var(--accent2);color:#fff8ee;font-size:.7rem;
   padding:3px 10px;border-radius:20px;letter-spacing:.04em}
-#learn-prog{font-size:.82rem;color:var(--text-sub);font-family:'DM Mono',monospace}
-.learn-code-wrap{background:var(--surface);border:2px solid var(--accent-light);
-  border-radius:14px;margin:10px 14px 0;padding:14px 16px;text-align:center}
-.learn-code-label{font-size:.75rem;color:var(--text-sub);letter-spacing:.06em;margin-bottom:6px}
-.learn-code{font-size:2.6rem;font-weight:700;color:var(--accent);font-family:'DM Mono',monospace;
-  letter-spacing:.1em}
-.learn-nav{display:flex;gap:10px;padding:12px 14px 0}
-.btn-learn-prev,.btn-learn-next{flex:1;padding:11px;border-radius:10px;
-  border:1.5px solid var(--border);background:var(--num-bg);
-  font-family:'Noto Serif JP',serif;font-size:.88rem;color:var(--text-sub);
-  cursor:pointer;transition:all .15s}
-.btn-learn-prev:hover:not(:disabled),.btn-learn-next:hover{background:var(--accent-light);border-color:var(--accent)}
-.btn-learn-prev:disabled{opacity:.3;cursor:default}
-.btn-start-test{margin:12px 14px 0;padding:13px;border-radius:12px;
+#learn-prog{font-size:.8rem;color:var(--text-sub);font-family:'DM Mono',monospace}
+
+/* 学習カード */
+.learn-card{background:var(--surface);margin:6px 14px 0;border-radius:16px;
+  border:1.5px solid var(--border);overflow:hidden;box-shadow:0 4px 16px var(--shadow)}
+.learn-img-wrap{width:100%;height:min(55vw,280px);background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+#learn-svg-slot,#q-svg-slot{width:100%;display:flex;align-items:center;justify-content:center}
+.learn-img-wrap svg{max-height:min(52vw,260px);max-width:100%;display:block}
+.learn-photo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:0;z-index:2}
+.learn-photo-credit{position:absolute;bottom:3px;right:6px;font-size:.58rem;
+  color:rgba(255,255,255,.75);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:3}
+.learn-info{padding:10px 14px 12px}
+.learn-name-row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.learn-name{font-size:1.15rem;font-weight:700;color:var(--text)}
+.learn-cat-badge{font-size:.68rem;color:var(--text-sub);border:1px solid var(--border);
+  padding:2px 7px;border-radius:12px}
+.learn-code-row{display:flex;align-items:center;gap:10px;margin-top:8px}
+.learn-code-label{font-size:.72rem;color:var(--text-sub)}
+.learn-code-num{font-size:1.8rem;font-weight:700;color:var(--accent);
+  font-family:'DM Mono',monospace;letter-spacing:.08em}
+/* 特徴ヒント */
+.learn-hint{margin-top:8px;padding:8px 10px;background:var(--surface2);
+  border-radius:8px;font-size:.76rem;color:var(--text-sub);line-height:1.65;border-left:3px solid var(--accent2)}
+.learn-season{display:inline-flex;align-items:center;gap:4px;margin-top:5px;
+  font-size:.7rem;color:var(--accent);background:var(--accent-light);
+  padding:2px 8px;border-radius:10px}
+
+.learn-nav{display:flex;gap:10px;padding:10px 14px 0}
+.btn-lnav{flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--num-bg);font-family:'Noto Serif JP',serif;font-size:.86rem;
+  color:var(--text-sub);cursor:pointer;transition:all .15s}
+.btn-lnav:hover:not(:disabled){background:var(--accent-light);border-color:var(--accent)}
+.btn-lnav:disabled{opacity:.28;cursor:default}
+.btn-start-test{margin:10px 14px 0;padding:13px;border-radius:12px;
   background:var(--accent);color:#fff8ee;border:none;
-  font-family:'Noto Serif JP',serif;font-size:.92rem;font-weight:700;
+  font-family:'Noto Serif JP',serif;font-size:.9rem;font-weight:700;
   cursor:pointer;transition:background .15s;letter-spacing:.06em}
 .btn-start-test:hover{background:#5a3510}
-.btn-back-select{display:block;margin:8px auto 12px;background:none;border:none;
-  font-family:'Noto Serif JP',serif;font-size:.8rem;color:var(--text-sub);
-  cursor:pointer;letter-spacing:.04em;padding:6px 12px;border-radius:8px}
-.btn-back-select:hover{background:var(--accent-light);color:var(--accent)}
+.btn-back{display:block;margin:8px auto 12px;background:none;border:none;
+  font-family:'Noto Serif JP',serif;font-size:.78rem;color:var(--text-sub);
+  cursor:pointer;padding:5px 12px;border-radius:8px}
+.btn-back:hover{background:var(--accent-light);color:var(--accent)}
 
-/* ── テスト画面のセットラベル ── */
-.set-label-bar{text-align:center;font-size:.78rem;color:var(--text-sub);
+/* ── テスト・問題画面 ── */
+#sq{display:none;flex-direction:column;width:100%;max-width:480px}
+.set-label-bar{text-align:center;font-size:.76rem;color:var(--text-sub);
   padding:8px 16px 0;letter-spacing:.04em}
+.quiz-mode-badge{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:10px;
+  margin-left:6px;vertical-align:middle}
+.quiz-mode-badge.forward{background:#e8f0ff;color:#3355aa}
+.quiz-mode-badge.reverse{background:#fff0e8;color:#aa5533}
+.quiz-mode-badge.review{background:#fff0f0;color:#aa2222}
 
-/* ── 完了画面の追加要素 ── */
-.done-pass{text-align:center;padding:0 20px;font-size:.85rem;margin-top:4px}
+/* 花カード（問題） */
+.flower-card{background:var(--surface);margin:8px 14px 0;border-radius:16px;
+  border:1.5px solid var(--border);overflow:hidden;box-shadow:0 4px 20px var(--shadow)}
+.flower-img{width:100%;height:min(55vw,280px);background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.flower-img svg{max-height:min(52vw,260px);max-width:100%;display:block}
+.flower-photo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.flower-photo-credit{position:absolute;bottom:3px;right:6px;font-size:.58rem;
+  color:rgba(255,255,255,.75);background:rgba(0,0,0,.35);padding:1px 5px;border-radius:4px;z-index:3}
+.flower-info{padding:8px 14px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flower-name{font-size:1.05rem;font-weight:700;color:var(--text)}
+.flower-cat{font-size:.68rem;color:var(--text-sub);border:1px solid var(--border);
+  padding:2px 7px;border-radius:12px}
+
+/* コード表示（逆方向問題） */
+.reverse-code-disp{width:100%;height:90px;background:var(--surface2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.reverse-code-label{font-size:.75rem;color:var(--text-sub)}
+.reverse-code-num{font-size:2.8rem;font-weight:700;color:var(--accent);
+  font-family:'DM Mono',monospace;letter-spacing:.1em}
+
+/* 選択肢（逆方向問題） */
+.choices-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px 0}
+.choice-btn{padding:12px 8px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--num-bg);font-family:'Noto Serif JP',serif;font-size:.84rem;
+  color:var(--text);cursor:pointer;transition:all .15s;text-align:center;line-height:1.35}
+.choice-btn:hover{background:var(--accent-light);border-color:var(--accent)}
+.choice-btn.correct{background:#d4f4e0;border-color:#2d7a4f;color:#1a5a2a}
+.choice-btn.wrong{background:#fde0e0;border-color:#9c2a2a;color:#7a1a1a}
+.choice-btn:disabled{cursor:default}
+
+/* ヒント表示（問題画面） */
+.q-hint{margin:6px 14px 0;padding:8px 12px;background:var(--surface2);border-radius:10px;
+  font-size:.73rem;color:var(--text-sub);line-height:1.6;border-left:3px solid var(--accent2)}
+.q-hint-season{font-size:.68rem;color:var(--accent);margin-top:3px}
+
+/* 入力エリア */
+.input-area{display:flex;gap:10px;padding:10px 14px 0;align-items:center}
+.input-disp{flex:1;min-height:52px;background:var(--surface);border:2px solid var(--border);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;font-family:'DM Mono',monospace;font-weight:700;color:var(--accent);
+  letter-spacing:.12em;transition:border-color .15s}
+.input-disp.has-val{border-color:var(--accent2)}
+.cursor{display:inline-block;width:2px;height:1.1em;background:var(--accent2);
+  margin-left:2px;animation:blink .9s step-end infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.btn-ans{padding:0 18px;height:52px;border-radius:12px;background:var(--accent);
+  color:#fff8ee;border:none;font-family:'Noto Serif JP',serif;font-size:.9rem;
+  cursor:pointer;transition:background .15s;white-space:nowrap;font-weight:700}
+.btn-ans:disabled{background:#c8b090;cursor:default}
+.btn-ans:not(:disabled):hover{background:#5a3510}
+
+/* テンキー */
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 14px 0}
+.num{padding:14px;border-radius:12px;border:1.5px solid var(--num-border);
+  background:var(--num-bg);font-family:'DM Mono',monospace;font-size:1.3rem;
+  font-weight:700;color:var(--accent);cursor:pointer;transition:all .1s;text-align:center}
+.num:hover{background:var(--accent-light);border-color:var(--accent)}
+.num:active{transform:scale(.93)}
+.num.zero{grid-column:1/2}.num.del{grid-column:3/4;font-size:1rem}
+
+/* ── 結果画面 ── */
+#sr{display:none;flex-direction:column;width:100%;max-width:480px}
+.result-card{background:var(--surface);margin:10px 14px 0;border-radius:16px;
+  border:1.5px solid var(--border);overflow:hidden;box-shadow:0 4px 20px var(--shadow);padding:16px 14px 12px}
+.result-top{display:flex;flex-direction:column;align-items:center;gap:6px}
+.result-badge{font-size:2.2rem}
+.result-label{font-size:1rem;font-weight:700;letter-spacing:.08em}
+.result-label.ok{color:var(--correct)}.result-label.ng{color:var(--wrong)}
+.result-img{width:180px;height:180px;background:var(--surface2);border-radius:12px;
+  overflow:hidden;display:flex;align-items:center;justify-content:center;margin:4px 0}
+.result-img svg{max-width:100%;max-height:100%}
+.result-img img{width:100%;height:100%;object-fit:cover}
+.result-detail{text-align:center;width:100%}
+.r-name{font-size:1rem;font-weight:700}
+.r-code{font-size:1.3rem;font-weight:700;color:var(--accent);font-family:'DM Mono',monospace}
+.r-ans-ng{font-size:.82rem;color:var(--wrong)}
+.r-correct-code{font-size:2rem;font-weight:700;color:var(--wrong);font-family:'DM Mono',monospace}
+.score-bar{display:flex;justify-content:space-around;margin-top:10px;padding-top:10px;
+  border-top:1px solid var(--border);font-size:.8rem;color:var(--text-sub)}
+.sc-ok{color:var(--correct);font-weight:700}.sc-ng{color:var(--wrong);font-weight:700}
+.btn-next{margin:12px 14px;padding:14px;border-radius:12px;background:var(--accent);
+  color:#fff8ee;border:none;font-family:'Noto Serif JP',serif;font-size:.92rem;
+  font-weight:700;cursor:pointer;transition:background .15s;letter-spacing:.06em}
+.btn-next:hover{background:#5a3510}
+
+/* ── 完了画面 ── */
+#sd{display:none;flex-direction:column;align-items:center;width:100%;max-width:480px;
+  padding:30px 20px 40px;gap:10px}
+.done-em{font-size:3rem}
+.done-title{font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:.05em}
+.done-score{font-size:.88rem;color:var(--text-sub)}
+.done-pass{text-align:center;font-size:.84rem}
 .pass-badge{color:#2d7a4f;font-weight:700}
-.fail-badge{color:#9c2a2a;line-height:1.6}
-.done-actions{display:flex;flex-direction:column;gap:10px;padding:0 20px;width:100%;margin-top:6px}
-.btn-learn-again,.btn-back-select2{width:100%;padding:12px;border-radius:12px;
-  border:1.5px solid var(--border);background:var(--num-bg);
-  font-family:'Noto Serif JP',serif;font-size:.88rem;color:var(--text-sub);
-  cursor:pointer;transition:all .15s;letter-spacing:.04em}
-.btn-learn-again:hover,.btn-back-select2:hover{background:var(--accent-light);border-color:var(--accent)}
-
-/* ── main-wrap ── */
-#main-wrap{width:100%;max-width:480px;display:flex;flex-direction:column;flex:1}
-#sq,#sr,#sd,#s-select,#s-learn{display:none;flex-direction:column;flex:1}
-
+.fail-badge{color:#9c2a2a;line-height:1.7}
+.done-actions{display:flex;flex-direction:column;gap:10px;width:100%;margin-top:8px}
+.btn-restart{width:100%;padding:13px;border-radius:12px;background:var(--accent);
+  color:#fff8ee;border:none;font-family:'Noto Serif JP',serif;font-size:.9rem;
+  font-weight:700;cursor:pointer;transition:background .15s;letter-spacing:.05em}
+.btn-restart:hover{background:#5a3510}
+.btn-sub-action{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);
+  background:var(--num-bg);font-family:'Noto Serif JP',serif;font-size:.86rem;
+  color:var(--text-sub);cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.btn-sub-action:hover{background:var(--accent-light);border-color:var(--accent)}
 </style>
 </head>
-
 <body>
 
 <div class="hdr">
   <div class="hdr-title">🌸 花コード暗記</div>
   <div class="prog-wrap">
     <div class="prog-bg"><div class="prog-fill" id="pf" style="width:0%"></div></div>
-    <div class="prog-txt" id="pt">0/0</div>
+    <div class="prog-txt" id="pt"></div>
   </div>
 </div>
 
 <div id="main-wrap">
 
-  <!-- ★ セット選択画面 -->
+  <!-- セット選択 -->
   <div id="s-select">
-    <div class="filter-bar" style="padding:12px 14px 0">
+    <div class="filter-bar">
       <button class="filter-btn active" id="fb-all"   onclick="setFilter('all')">全て (190)</button>
       <button class="filter-btn"        id="fb-kiri"  onclick="setFilter('切り花')">切り花 (130)</button>
       <button class="filter-btn"        id="fb-hachi" onclick="setFilter('鉢物')">鉢物 (60)</button>
     </div>
     <div class="set-header">
       <div class="set-header-title">セットを選んで学習</div>
-      <div class="set-header-sub">各セット20問 ・ 正答率80%以上で合格 🎖</div>
+      <div class="set-header-sub">📖 学習 → ✏️ テスト の2段階 ・ 合格ライン 80%</div>
     </div>
     <div class="set-grid" id="set-grid"></div>
-    <button class="btn-all-test" onclick="startAllTest()">📋 全問テストモード</button>
+    <button class="btn-all-test" onclick="startAllTest()">📋 全問テストモード（190問）</button>
   </div>
 
-  <!-- ★ 学習フェーズ（フラッシュカード） -->
-  <div id="s-learn" style="display:none">
-    <div class="learn-bar">
+  <!-- 学習フェーズ -->
+  <div id="s-learn">
+    <div class="learn-topbar">
       <span id="learn-prog">1 / 20</span>
-      <span class="learn-badge">学習モード</span>
+      <span class="learn-badge">📖 学習モード</span>
     </div>
-    <div class="flower-card">
-      <div class="flower-img" id="learn-img"></div>
-      <div class="flower-info">
-        <div class="flower-name" id="learn-name">—</div>
-        <span class="flower-cat" id="learn-cat"></span>
+    <div class="learn-card">
+      <div class="learn-img-wrap" id="learn-img-wrap">
+        <div id="learn-svg-slot"></div>
+        <img id="learn-photo" class="learn-photo" style="display:none" alt="">
+        <span class="learn-photo-credit" id="learn-photo-credit" style="display:none"></span>
       </div>
-    </div>
-    <div class="learn-code-wrap">
-      <div class="learn-code-label">コード番号</div>
-      <div class="learn-code" id="learn-code">—</div>
+      <div class="learn-info">
+        <div class="learn-name-row">
+          <div class="learn-name" id="learn-name">—</div>
+          <span class="learn-cat-badge" id="learn-cat"></span>
+        </div>
+        <div class="learn-code-row">
+          <span class="learn-code-label">コード番号</span>
+          <span class="learn-code-num" id="learn-code">—</span>
+        </div>
+        <div class="learn-hint" id="learn-hint"></div>
+        <div class="learn-season" id="learn-season"></div>
+      </div>
     </div>
     <div class="learn-nav">
-      <button class="btn-learn-prev" id="btn-lprev" onclick="learnPrev()">← 前へ</button>
-      <button class="btn-learn-next" id="btn-lnext" onclick="learnNext()">次へ →</button>
+      <button class="btn-lnav" id="btn-lprev" onclick="learnPrev()">← 前へ</button>
+      <button class="btn-lnav" id="btn-lnext" onclick="learnNext()">次へ →</button>
     </div>
-    <button class="btn-start-test" onclick="startSetTest()">✏️ このセットをテスト</button>
-    <button class="btn-back-select" onclick="showSelect()">← セット選択に戻る</button>
+    <button class="btn-start-test" onclick="startSetTest()">✏️ このセットをテストする</button>
+    <button class="btn-back" onclick="showSelect()">← セット選択に戻る</button>
   </div>
 
-  <!-- テスト画面（問題） -->
-  <div id="sq" style="display:none">
+  <!-- 問題画面 -->
+  <div id="sq">
     <div class="set-label-bar" id="set-label-bar"></div>
     <div class="flower-card">
-      <div class="flower-img" id="img-wrap"></div>
-      <div class="flower-info">
-        <div class="flower-name" id="fn">—</div>
-        <span class="flower-cat"  id="fc"></span>
+      <!-- 通常問題：画像＋名前 -->
+      <div id="q-forward">
+        <div class="flower-img" id="img-wrap">
+          <div id="q-svg-slot"></div>
+          <img id="q-photo" class="flower-photo" style="display:none" alt="">
+          <span class="flower-photo-credit" id="q-photo-credit" style="display:none"></span>
+        </div>
+        <div class="flower-info">
+          <div class="flower-name" id="fn">—</div>
+          <span class="flower-cat" id="fc"></span>
+        </div>
+      </div>
+      <!-- 逆問題：コード番号表示 -->
+      <div id="q-reverse" style="display:none">
+        <div class="reverse-code-disp">
+          <div class="reverse-code-label">このコード番号の花は？</div>
+          <div class="reverse-code-num" id="rq-code">—</div>
+        </div>
       </div>
     </div>
-    <div class="input-area">
-      <div class="input-disp" id="id"><span class="cursor"></span></div>
-      <button class="btn-ans" id="ba" onclick="checkAns()" disabled>回答</button>
+    <!-- ヒント（問題画面） -->
+    <div class="q-hint" id="q-hint" style="display:none">
+      <div id="q-hint-text"></div>
+      <div class="q-hint-season" id="q-hint-season"></div>
     </div>
-    <div class="numpad">
-      <button class="num" onclick="pn('7')">7</button>
-      <button class="num" onclick="pn('8')">8</button>
-      <button class="num" onclick="pn('9')">9</button>
-      <button class="num" onclick="pn('4')">4</button>
-      <button class="num" onclick="pn('5')">5</button>
-      <button class="num" onclick="pn('6')">6</button>
-      <button class="num" onclick="pn('1')">1</button>
-      <button class="num" onclick="pn('2')">2</button>
-      <button class="num" onclick="pn('3')">3</button>
-      <button class="num zero" onclick="pn('0')">0</button>
-      <button class="num del"  onclick="pb()">⌫</button>
+    <!-- 通常問題：テンキー入力 -->
+    <div id="q-input-area">
+      <div class="input-area">
+        <div class="input-disp" id="id"><span class="cursor"></span></div>
+        <button class="btn-ans" id="ba" onclick="checkAns()" disabled>回答</button>
+      </div>
+      <div class="numpad">
+        <button class="num" onclick="pn('7')">7</button>
+        <button class="num" onclick="pn('8')">8</button>
+        <button class="num" onclick="pn('9')">9</button>
+        <button class="num" onclick="pn('4')">4</button>
+        <button class="num" onclick="pn('5')">5</button>
+        <button class="num" onclick="pn('6')">6</button>
+        <button class="num" onclick="pn('1')">1</button>
+        <button class="num" onclick="pn('2')">2</button>
+        <button class="num" onclick="pn('3')">3</button>
+        <button class="num zero" onclick="pn('0')">0</button>
+        <button class="num del"  onclick="pb()">⌫</button>
+      </div>
     </div>
-    <button class="btn-back-select" onclick="showSelect()" style="margin:6px auto 12px">← セット選択に戻る</button>
+    <!-- 逆問題：選択肢 -->
+    <div id="q-choices-area" style="display:none">
+      <div class="choices-grid" id="choices-grid"></div>
+    </div>
+    <button class="btn-back" onclick="showSelect()" style="margin-top:8px">← セット選択に戻る</button>
   </div>
 
   <!-- 結果画面 -->
-  <div id="sr" style="display:none">
+  <div id="sr">
     <div class="set-label-bar" id="set-label-bar-r"></div>
     <div class="result-card">
       <div class="result-top">
@@ -295,22 +359,23 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
     <button class="btn-next" onclick="nextQ()">次へ →</button>
   </div>
 
-  <!-- セット完了画面 -->
-  <div id="sd" style="display:none">
+  <!-- 完了画面 -->
+  <div id="sd">
     <div class="done-em" id="done-em">🎉</div>
-    <div class="done-title" id="done-title">セット完了！</div>
+    <div class="done-title" id="done-title">完了！</div>
     <div class="done-score" id="ds"></div>
     <div class="done-pass" id="done-pass"></div>
     <div class="done-actions">
-      <button class="btn-restart" onclick="retrySet()">🔄 もう一度</button>
-      <button class="btn-learn-again" onclick="startLearnPhase()">📖 再学習</button>
-      <button class="btn-back-select2" onclick="showSelect()">← セット選択</button>
+      <button class="btn-restart" onclick="retrySet()">🔄 もう一度テスト</button>
+      <button class="btn-sub-action" onclick="startLearnPhase()">📖 再学習してから挑戦</button>
+      <button class="btn-sub-action" onclick="showSelect()">← セット選択に戻る</button>
     </div>
   </div>
 
-</div><!-- /main-wrap -->
+</div>
 
 <script>
+
 
 // =====================================================================
 // SVG イラスト（リアル描写版・アプリ内蔵）
@@ -318,7 +383,7 @@ body{font-family:'Noto Serif JP',serif;background:var(--bg);color:var(--text);
 const S = {};
 
 // ── バラ ──
-S.bara=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/>
+S.bara=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/>
 <line x1="100" y1="195" x2="100" y2="118" stroke="#2d6a1a" stroke-width="4" stroke-linecap="round"/>
 <line x1="100" y1="165" x2="82" y2="152" stroke="#2d6a1a" stroke-width="2.5"/>
 <ellipse cx="72" cy="147" rx="18" ry="10" fill="#3d8a2a" transform="rotate(-30,72,147)"/>
@@ -342,7 +407,7 @@ S.bara=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect widt
 </svg>`;
 
 // ── カーネーション ──
-S.carnation=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
+S.carnation=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
 <line x1="100" y1="195" x2="100" y2="118" stroke="#3a7a2a" stroke-width="3.5" stroke-linecap="round"/>
 <ellipse cx="76" cy="168" rx="22" ry="8" fill="#4a9a35" transform="rotate(-20,76,168)"/>
 <ellipse cx="124" cy="152" rx="22" ry="8" fill="#4a9a35" transform="rotate(20,124,152)"/>
@@ -360,7 +425,7 @@ S.carnation=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect
 </svg>`;
 
 // ── 胡蝶蘭 ──
-S.ran_phala=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fdfaff"/>
+S.ran_phala=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fdfaff"/>
 <line x1="100" y1="145" x2="100" y2="52" stroke="#3a7a2a" stroke-width="2.5" stroke-linecap="round"/>
 <ellipse cx="100" cy="160" rx="40" ry="14" fill="#3d8a2a" transform="rotate(-12,100,160)"/>
 <ellipse cx="100" cy="170" rx="38" ry="13" fill="#4a9a35" transform="rotate(15,100,170)"/>
@@ -397,7 +462,7 @@ S.ran_phala=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect
 </svg>`;
 
 // ── カトレア ──
-S.ran_cat=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fdf0ff"/>
+S.ran_cat=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fdf0ff"/>
 <rect x="94" y="128" width="12" height="64" rx="4" fill="#5a8c3a"/>
 <ellipse cx="84" cy="148" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-15,84,148)"/>
 <ellipse cx="116" cy="155" rx="22" ry="8" fill="#4a9a35" transform="rotate(10,116,155)"/>
@@ -414,7 +479,7 @@ S.ran_cat=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect w
 </svg>`;
 
 // ── デンドロ/デンファレ系 ──
-S.ran_dendro=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/>
+S.ran_dendro=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/>
 <line x1="100" y1="195" x2="100" y2="48" stroke="#5a8c3a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="78" cy="185" rx="18" ry="7" fill="#3d8a2a" transform="rotate(-15,78,185)"/>
 <ellipse cx="122" cy="175" rx="18" ry="7" fill="#4a9a35" transform="rotate(15,122,175)"/>
@@ -459,7 +524,7 @@ S.ran_dendro=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rec
 </svg>`;
 
 // ── オンシジューム ──
-S.ran_onshi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffbe8"/>
+S.ran_onshi=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffbe8"/>
 <ellipse cx="100" cy="148" rx="6" ry="46" fill="#5a8c3a"/>
 <ellipse cx="72" cy="172" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-20,72,172)"/>
 <g transform="translate(100,95)">
@@ -485,7 +550,7 @@ S.ran_onshi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect
 </svg>`;
 
 // ── シンピジューム ──
-S.ran_dendro2=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0fff4"/>
+S.ran_dendro2=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0fff4"/>
 <line x1="100" y1="195" x2="100" y2="78" stroke="#5a8c3a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="72" cy="185" rx="26" ry="9" fill="#3d8a2a" transform="rotate(-20,72,185)"/>
 <ellipse cx="130" cy="170" rx="26" ry="9" fill="#4a9a35" transform="rotate(18,130,170)"/>
@@ -515,7 +580,7 @@ S.ran_dendro2=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><re
 </svg>`;
 
 // ── 菊（白） ──
-S.shirokiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f8ff"/>
+S.shirokiku=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f8ff"/>
 <line x1="100" y1="195" x2="100" y2="116" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <path d="M100,148 C80,142 65,130 60,115" fill="none" stroke="#3a7a2a" stroke-width="2.5"/>
 <ellipse cx="56" cy="110" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-28,56,110)"/>
@@ -550,7 +615,7 @@ S.shirokiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect
 </svg>`;
 
 // ── 菊（黄） ──
-S.kikiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/>
+S.kikiku=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/>
 <line x1="100" y1="195" x2="100" y2="116" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <path d="M100,148 C80,142 65,130 60,115" fill="none" stroke="#3a7a2a" stroke-width="2.5"/>
 <ellipse cx="56" cy="110" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-28,56,110)"/>
@@ -561,7 +626,7 @@ S.kikiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── 菊（赤） ──
-S.akagiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/>
+S.akagiku=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/>
 <line x1="100" y1="195" x2="100" y2="116" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <path d="M100,148 C80,142 65,130 60,115" fill="none" stroke="#3a7a2a" stroke-width="2.5"/>
 <ellipse cx="56" cy="110" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-28,56,110)"/>
@@ -572,7 +637,7 @@ S.akagiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect w
 </svg>`;
 
 // ── スプレーキク ──
-S.supreikiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/>
+S.supreikiku=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/>
 <line x1="100" y1="195" x2="100" y2="70" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="74" cy="172" rx="22" ry="8" fill="#3d8a2a" transform="rotate(-20,74,172)"/>
 <ellipse cx="126" cy="160" rx="20" ry="7" fill="#4a9a35" transform="rotate(18,126,160)"/>
@@ -591,7 +656,7 @@ S.supreikiku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rec
 </svg>`;
 
 // ── ディスバット ──
-S.disbat=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffff5"/>
+S.disbat=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffff5"/>
 <line x1="100" y1="195" x2="100" y2="116" stroke="#3a7a2a" stroke-width="3.5" stroke-linecap="round"/>
 <path d="M100,158 C76,150 60,136 56,118" fill="none" stroke="#3a7a2a" stroke-width="2.5"/>
 <ellipse cx="52" cy="113" rx="26" ry="10" fill="#3d8a2a" transform="rotate(-28,52,113)"/>
@@ -602,7 +667,7 @@ S.disbat=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── チューリップ（赤） ──
-S.tulip=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/>
+S.tulip=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/>
 <line x1="100" y1="195" x2="100" y2="118" stroke="#2d6a1a" stroke-width="4" stroke-linecap="round"/>
 <path d="M100,148 C76,140 60,124 58,108" fill="none" stroke="#2d6a1a" stroke-width="3"/>
 <path d="M58,108 C54,96 64,88 74,92 C80,94 86,102 90,112" fill="#3d8a2a"/>
@@ -615,7 +680,7 @@ S.tulip=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wid
 </svg>`;
 
 // ── チューリップ（黄） ──
-S.tulip_y=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/>
+S.tulip_y=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/>
 <line x1="100" y1="195" x2="100" y2="118" stroke="#2d6a1a" stroke-width="4" stroke-linecap="round"/>
 <path d="M100,148 C76,140 60,124 58,108" fill="none" stroke="#2d6a1a" stroke-width="3"/>
 <path d="M58,108 C54,96 64,88 74,92 C80,94 86,102 90,112" fill="#3d8a2a"/>
@@ -627,7 +692,7 @@ S.tulip_y=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect w
 </svg>`;
 
 // ── テッポウユリ（白） ──
-S.yuri_w=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/>
+S.yuri_w=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/>
 <line x1="100" y1="195" x2="100" y2="64" stroke="#2d6a1a" stroke-width="3.5" stroke-linecap="round"/>
 <path d="M100,158 C78,150 60,136 56,118" fill="none" stroke="#2d6a1a" stroke-width="2.5"/>
 <ellipse cx="52" cy="113" rx="26" ry="9" fill="#3d8a2a" transform="rotate(-28,52,113)"/>
@@ -650,7 +715,7 @@ S.yuri_w=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── ユリ（オリエンタル・ピンク） ──
-S.yuri_p=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/>
+S.yuri_p=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ff"/>
 <line x1="100" y1="195" x2="100" y2="64" stroke="#2d6a1a" stroke-width="3.5" stroke-linecap="round"/>
 <path d="M100,158 C78,150 60,136 56,118" fill="none" stroke="#2d6a1a" stroke-width="2.5"/>
 <ellipse cx="52" cy="113" rx="26" ry="9" fill="#3d8a2a" transform="rotate(-28,52,113)"/>
@@ -673,7 +738,7 @@ S.yuri_p=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── LAユリ（オレンジ） ──
-S.yuri_o=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/>
+S.yuri_o=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/>
 <line x1="100" y1="195" x2="100" y2="64" stroke="#2d6a1a" stroke-width="3.5" stroke-linecap="round"/>
 <path d="M100,158 C78,150 60,136 56,118" fill="none" stroke="#2d6a1a" stroke-width="2.5"/>
 <ellipse cx="52" cy="113" rx="26" ry="9" fill="#3d8a2a" transform="rotate(-28,52,113)"/>
@@ -691,7 +756,7 @@ S.yuri_o=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── ガーベラ ──
-S.gerbera=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ee"/>
+S.gerbera=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8ee"/>
 <line x1="100" y1="195" x2="100" y2="118" stroke="#2d6a1a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="76" cy="166" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-22,76,166)"/>
 <g transform="translate(100,88)">
@@ -706,7 +771,7 @@ S.gerbera=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect w
 </svg>`;
 
 // ── ヒマワリ ──
-S.himawari=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffbe8"/>
+S.himawari=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffbe8"/>
 <line x1="100" y1="195" x2="100" y2="122" stroke="#2d6a1a" stroke-width="4.5" stroke-linecap="round"/>
 <path d="M100,162 C74,154 54,138 48,118" fill="none" stroke="#2d6a1a" stroke-width="3"/>
 <ellipse cx="44" cy="113" rx="28" ry="11" fill="#3d8a2a" transform="rotate(-28,44,113)"/>
@@ -725,7 +790,7 @@ S.himawari=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── アジサイ ──
-S.ajisai=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f4ff"/>
+S.ajisai=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f4ff"/>
 <line x1="100" y1="195" x2="100" y2="132" stroke="#2d6a1a" stroke-width="4" stroke-linecap="round"/>
 <path d="M100,154 C78,148 60,136 56,120" fill="none" stroke="#2d6a1a" stroke-width="2.5"/>
 <path d="M56,120 C52,108 62,100 72,104 C78,106 84,114 88,124" fill="#3d8a2a"/>
@@ -748,7 +813,7 @@ S.ajisai=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── サクラ ──
-S.sakura=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
+S.sakura=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
 <path d="M100,195 C100,175 98,160 94,144" stroke="#6a3a1a" stroke-width="5.5" fill="none" stroke-linecap="round"/>
 <path d="M94,144 C82,128 62,112 46,96" stroke="#6a3a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
 <path d="M94,144 C104,128 118,114 134,98" stroke="#6a3a1a" stroke-width="4" fill="none" stroke-linecap="round"/>
@@ -798,7 +863,7 @@ S.sakura=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── ダリア ──
-S.dahlia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f5"/>
+S.dahlia=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f5"/>
 <line x1="100" y1="195" x2="100" y2="118" stroke="#2d6a1a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="76" cy="166" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-22,76,166)"/>
 <g transform="translate(100,86)">
@@ -810,7 +875,7 @@ S.dahlia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── シャクヤク ──
-S.shakuyaku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
+S.shakuyaku=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
 <line x1="100" y1="195" x2="100" y2="120" stroke="#2d6a1a" stroke-width="3.5" stroke-linecap="round"/>
 <ellipse cx="74" cy="168" rx="26" ry="10" fill="#3d8a2a" transform="rotate(-22,74,168)"/>
 <ellipse cx="126" cy="156" rx="24" ry="9" fill="#4a9a35" transform="rotate(18,126,156)"/>
@@ -830,7 +895,7 @@ S.shakuyaku=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect
 </svg>`;
 
 // ── コスモス ──
-S.cosmos=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5ff"/>
+S.cosmos=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5ff"/>
 <line x1="100" y1="195" x2="100" y2="115" stroke="#3a7a2a" stroke-width="2.5" stroke-linecap="round"/>
 <ellipse cx="76" cy="168" rx="20" ry="7" fill="#3d8a2a" transform="rotate(-22,76,168)"/>
 <g transform="translate(100,84)">
@@ -856,7 +921,7 @@ S.cosmos=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── マーガレット ──
-S.margaret=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/>
+S.margaret=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/>
 <line x1="100" y1="195" x2="100" y2="116" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="76" cy="166" rx="22" ry="8" fill="#3d8a2a" transform="rotate(-22,76,166)"/>
 <g transform="translate(100,84)">
@@ -866,7 +931,7 @@ S.margaret=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── カスミソウ ──
-S.kasumi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f8ff"/>
+S.kasumi=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f8ff"/>
 <line x1="100" y1="195" x2="100" y2="145" stroke="#3a7a2a" stroke-width="2.5" stroke-linecap="round"/>
 <path d="M100,145 L70,112 M100,145 L130,112 M100,145 L100,105" stroke="#4a9a35" stroke-width="1.8" fill="none"/>
 <path d="M70,112 L52,86 M70,112 L86,84 M130,112 L148,86 M130,112 L114,84 M100,105 L82,80 M100,105 L118,80" stroke="#4a9a35" stroke-width="1.5" fill="none"/>
@@ -882,7 +947,7 @@ S.kasumi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── スイートピー ──
-S.sweetpea=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f8"/>
+S.sweetpea=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f8"/>
 <path d="M100,195 C100,172 96,148 90,126 C84,104 80,82 84,60" stroke="#3a7a2a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 <ellipse cx="68" cy="175" rx="20" ry="7" fill="#3d8a2a" transform="rotate(-20,68,175)"/>
 <g transform="translate(91,160)">
@@ -904,7 +969,7 @@ S.sweetpea=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── グラジオラス ──
-S.gladiolus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5ff"/>
+S.gladiolus=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5ff"/>
 <line x1="108" y1="195" x2="100" y2="32" stroke="#3a7a2a" stroke-width="4" stroke-linecap="round"/>
 <ellipse cx="84" cy="180" rx="26" ry="10" fill="#3d8a2a" transform="rotate(-20,84,180)"/>
 <g transform="translate(92,163)">
@@ -940,7 +1005,7 @@ S.gladiolus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect
 </svg>`;
 
 // ── フリージア ──
-S.freesia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde0"/>
+S.freesia=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde0"/>
 <path d="M100,195 C100,165 96,138 90,114 C84,90 82,66 86,44" stroke="#3a7a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
 <ellipse cx="68" cy="172" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-20,68,172)"/>
 <g transform="translate(94,158) rotate(-28)">
@@ -970,7 +1035,7 @@ S.freesia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect w
 </svg>`;
 
 // ── スイセン ──
-S.suisen=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff0"/>
+S.suisen=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff0"/>
 <line x1="100" y1="195" x2="100" y2="106" stroke="#2d6a1a" stroke-width="3.5" stroke-linecap="round"/>
 <ellipse cx="74" cy="168" rx="28" ry="10" fill="#3d8a2a" transform="rotate(-25,74,168)"/>
 <ellipse cx="126" cy="155" rx="26" ry="9" fill="#4a9a35" transform="rotate(20,126,155)"/>
@@ -998,7 +1063,7 @@ S.suisen=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── アイリス ──
-S.iris=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
+S.iris=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
 <line x1="100" y1="195" x2="100" y2="95" stroke="#2d6a1a" stroke-width="4" stroke-linecap="round"/>
 <path d="M100,155 C76,148 56,135 52,118" fill="none" stroke="#2d6a1a" stroke-width="2.5"/>
 <ellipse cx="48" cy="113" rx="26" ry="10" fill="#3d8a2a" transform="rotate(-28,48,113)"/>
@@ -1018,7 +1083,7 @@ S.iris=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect widt
 </svg>`;
 
 // ── カラー ──
-S.kara=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5fff8"/>
+S.kara=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5fff8"/>
 <line x1="104" y1="195" x2="100" y2="118" stroke="#2d6a1a" stroke-width="4.5" stroke-linecap="round"/>
 <path d="M100,155 C74,147 55,132 52,114" fill="none" stroke="#2d6a1a" stroke-width="3"/>
 <ellipse cx="48" cy="109" rx="28" ry="11" fill="#3d8a2a" transform="rotate(-28,48,109)"/>
@@ -1038,7 +1103,7 @@ S.kara=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect widt
 </svg>`;
 
 // ── アンスリウム ──
-S.anthrium=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
+S.anthrium=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f8"/>
 <line x1="100" y1="195" x2="100" y2="128" stroke="#2d6a1a" stroke-width="3.5" stroke-linecap="round"/>
 <ellipse cx="74" cy="172" rx="28" ry="11" fill="#3d8a2a" transform="rotate(-22,74,172)"/>
 <ellipse cx="130" cy="160" rx="26" ry="10" fill="#4a9a35" transform="rotate(18,130,160)"/>
@@ -1062,7 +1127,7 @@ S.anthrium=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── リシアンサス（トルコキキョウ） ──
-S.lisianthus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
+S.lisianthus=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
 <line x1="100" y1="195" x2="100" y2="104" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="76" cy="166" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-22,76,166)"/>
 <ellipse cx="124" cy="155" rx="22" ry="8" fill="#4a9a35" transform="rotate(18,124,155)"/>
@@ -1091,7 +1156,7 @@ S.lisianthus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rec
 </svg>`;
 
 // ── リンドウ ──
-S.rindou=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5f0ff"/>
+S.rindou=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5f0ff"/>
 <line x1="100" y1="195" x2="100" y2="50" stroke="#2d6a1a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="74" cy="175" rx="26" ry="10" fill="#3d8a2a" transform="rotate(-20,74,175)"/>
 <ellipse cx="128" cy="160" rx="24" ry="9" fill="#4a9a35" transform="rotate(18,128,160)"/>
@@ -1127,7 +1192,7 @@ S.rindou=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── ポピー ──
-S.poppy=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f0"/>
+S.poppy=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f0"/>
 <path d="M100,195 Q96,168 92,145 Q88,125 92,108 Q96,96 100,86" stroke="#2d6a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
 <ellipse cx="74" cy="172" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-22,74,172)"/>
 <g transform="translate(100,70)">
@@ -1150,7 +1215,7 @@ S.poppy=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wid
 </svg>`;
 
 // ── ヒヤシンス ──
-S.hyacinth=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5f0ff"/>
+S.hyacinth=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f5f0ff"/>
 <line x1="100" y1="195" x2="100" y2="56" stroke="#2d6a1a" stroke-width="5" stroke-linecap="round"/>
 <ellipse cx="70" cy="180" rx="30" ry="12" fill="#3d8a2a" transform="rotate(-20,70,180)"/>
 <ellipse cx="132" cy="170" rx="28" ry="11" fill="#4a9a35" transform="rotate(18,132,170)"/>
@@ -1203,7 +1268,7 @@ S.hyacinth=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── ナノハナ ──
-S.nanohana=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffff0"/>
+S.nanohana=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffff0"/>
 <line x1="100" y1="195" x2="100" y2="60" stroke="#2d6a1a" stroke-width="4.5" stroke-linecap="round"/>
 <ellipse cx="68" cy="162" rx="32" ry="13" fill="#3d8a2a" transform="rotate(-25,68,162)"/>
 <ellipse cx="134" cy="148" rx="30" ry="12" fill="#4a9a35" transform="rotate(22,134,148)"/>
@@ -1246,7 +1311,7 @@ S.nanohana=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── ストレリチア ──
-S.strelitzia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8ff"/>
+S.strelitzia=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8ff"/>
 <line x1="100" y1="195" x2="100" y2="62" stroke="#2d6a1a" stroke-width="4.5" stroke-linecap="round"/>
 <ellipse cx="74" cy="170" rx="28" ry="11" fill="#3d8a2a" transform="rotate(-20,74,170)"/>
 <ellipse cx="126" cy="158" rx="26" ry="10" fill="#4a9a35" transform="rotate(18,126,158)"/>
@@ -1269,7 +1334,7 @@ S.strelitzia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rec
 </svg>`;
 
 // ── ユーカリ ──
-S.eucalyptus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8f0"/>
+S.eucalyptus=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8f0"/>
 <line x1="100" y1="195" x2="100" y2="40" stroke="#5a7a3a" stroke-width="3.5" stroke-linecap="round"/>
 <!-- 対生の葉 -->
 <ellipse cx="76" cy="80" rx="26" ry="16" fill="#6aaa5a" transform="rotate(-35,76,80)"/>
@@ -1286,7 +1351,7 @@ S.eucalyptus=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rec
 </svg>`;
 
 // ── マツ ──
-S.matsu=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8f0"/>
+S.matsu=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8f0"/>
 <line x1="100" y1="195" x2="100" y2="40" stroke="#6a4a2a" stroke-width="5.5" stroke-linecap="round"/>
 <g transform="translate(100,148)">
   <line x1="-44" y1="0" x2="44" y2="0" stroke="#6a4a2a" stroke-width="2.5"/>
@@ -1328,7 +1393,7 @@ S.matsu=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wid
 </svg>`;
 
 // ── サカキ/ハモノ（グリーン系） ──
-S.leaf_green=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/>
+S.leaf_green=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/>
 <line x1="100" y1="195" x2="100" y2="42" stroke="#5a7a3a" stroke-width="3.5" stroke-linecap="round"/>
 <path d="M100,162 C80,154 62,140 58,122 C54,105 64,92 78,90 C86,89 94,94 100,102" fill="#3d8a2a"/>
 <path d="M100,162 C120,154 138,140 142,122 C146,105 136,92 122,90 C114,89 106,94 100,102" fill="#4a9a35"/>
@@ -1342,7 +1407,7 @@ S.leaf_green=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rec
 </svg>`;
 
 // ── タケ ──
-S.take=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0fff0"/>
+S.take=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0fff0"/>
 <rect x="88" y="20" width="16" height="175" rx="6" fill="#5a8a2a"/>
 <rect x="88" y="20" width="16" height="175" rx="6" fill="none" stroke="#4a7a1a" stroke-width="1.5"/>
 <!-- 竹の節 -->
@@ -1366,7 +1431,7 @@ S.take=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect widt
 </svg>`;
 
 // ── ドラセナ/観葉 ──
-S.dracena=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/>
+S.dracena=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/>
 <path d="M92,195 L96,130 L100,100 L104,130 L108,195Z" fill="#6a4a2a"/>
 <path d="M100,100 C78,82 52,65 36,48" stroke="#3d8a2a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
 <ellipse cx="28" cy="43" rx="32" ry="10" fill="#3d8a2a" transform="rotate(-22,28,43)"/>
@@ -1384,7 +1449,7 @@ S.dracena=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect w
 </svg>`;
 
 // ── ハス ──
-S.hasu=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#e8f8ff"/>
+S.hasu=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#e8f8ff"/>
 <ellipse cx="100" cy="180" rx="72" ry="18" fill="#4aaa44" opacity=".6"/>
 <line x1="100" y1="180" x2="100" y2="112" stroke="#4a8a2a" stroke-width="4.5" stroke-linecap="round"/>
 <g transform="translate(100,94)">
@@ -1413,7 +1478,7 @@ S.hasu=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect widt
 </svg>`;
 
 // ── ホオヅキ ──
-S.hooduki=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffaee"/>
+S.hooduki=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffaee"/>
 <line x1="100" y1="195" x2="100" y2="64" stroke="#3a7a2a" stroke-width="3.5" stroke-linecap="round"/>
 <ellipse cx="74" cy="172" rx="26" ry="10" fill="#3d8a2a" transform="rotate(-20,74,172)"/>
 <ellipse cx="128" cy="155" rx="24" ry="9" fill="#4a9a35" transform="rotate(18,128,155)"/>
@@ -1432,7 +1497,7 @@ S.hooduki=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect w
 </svg>`;
 
 // ── アルストロメリア ──
-S.alstroemeria=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/>
+S.alstroemeria=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff8f0"/>
 <line x1="100" y1="195" x2="100" y2="84" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="76" cy="168" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-20,76,168)"/>
 <ellipse cx="126" cy="154" rx="22" ry="8" fill="#4a9a35" transform="rotate(18,126,154)"/>
@@ -1470,7 +1535,7 @@ S.alstroemeria=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><r
 </svg>`;
 
 // ── ライラック ──
-S.lilac=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
+S.lilac=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
 <line x1="100" y1="195" x2="100" y2="124" stroke="#5a4a2a" stroke-width="4.5" stroke-linecap="round"/>
 <path d="M100,148 C80,140 62,126 58,108" fill="none" stroke="#5a4a2a" stroke-width="3"/>
 <path d="M100,142 C120,134 138,120 142,102" fill="none" stroke="#5a4a2a" stroke-width="3"/>
@@ -1483,7 +1548,7 @@ S.lilac=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wid
 </svg>`;
 
 // ── アカシア（ミモザ） ──
-S.acacia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/>
+S.acacia=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fffde8"/>
 <line x1="100" y1="195" x2="100" y2="50" stroke="#5a7a2a" stroke-width="3.5" stroke-linecap="round"/>
 <path d="M100,168 C76,158 56,142 48,118" fill="none" stroke="#5a7a2a" stroke-width="2.5"/>
 <path d="M100,138 C120,128 140,112 148,88" fill="none" stroke="#5a7a2a" stroke-width="2.5"/>
@@ -1506,7 +1571,7 @@ S.acacia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wi
 </svg>`;
 
 // ── ツツジ ──
-S.tsutsuji=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f5"/>
+S.tsutsuji=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f5"/>
 <line x1="100" y1="195" x2="100" y2="124" stroke="#5a4a2a" stroke-width="4.5" stroke-linecap="round"/>
 <path d="M100,148 C78,140 60,126 56,108" fill="none" stroke="#5a4a2a" stroke-width="3"/>
 <path d="M100,142 C122,134 140,120 144,102" fill="none" stroke="#5a4a2a" stroke-width="3"/>
@@ -1555,7 +1620,7 @@ S.tsutsuji=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── シクラメン ──
-S.cyclamen=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f8"/>
+S.cyclamen=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff0f8"/>
 <!-- 葉（ハート形、模様入り） -->
 <path d="M100,155 C85,148 72,136 68,122 C64,108 70,96 80,92 C86,89 94,91 100,96 C106,91 114,89 120,92 C130,96 136,108 132,122 C128,136 115,148 100,155Z" fill="#4a8a2a"/>
 <path d="M100,155 C95,148 89,136 87,122 C85,110 89,100 94,96" fill="#5a9a35" opacity=".6"/>
@@ -1575,7 +1640,7 @@ S.cyclamen=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect 
 </svg>`;
 
 // ── ポインセチア ──
-S.poinsettia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/>
+S.poinsettia=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f5"/>
 <line x1="100" y1="195" x2="100" y2="125" stroke="#3a7a2a" stroke-width="3.5" stroke-linecap="round"/>
 <ellipse cx="76" cy="172" rx="26" ry="10" fill="#3d8a2a" transform="rotate(-20,76,172)"/>
 <!-- 苞葉（星形・赤） -->
@@ -1608,7 +1673,7 @@ S.poinsettia=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rec
 </svg>`;
 
 // ── アンスリウム（鉢） ──
-S.anthrium_hachi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f0"/>
+S.anthrium_hachi=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#fff5f0"/>
 <path d="M70,175 L130,175 L122,198 L78,198Z" fill="#7a5a3a"/>
 <rect x="68" y="153" width="64" height="24" rx="6" fill="#8a6a4a"/>
 <rect x="65" y="144" width="70" height="14" rx="5" fill="#9a7a5a"/>
@@ -1627,7 +1692,7 @@ S.anthrium_hachi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
 </svg>`;
 
 // ── 鉢物汎用（草花） ──
-S.hachi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/>
+S.hachi=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f0f8e8"/>
 <path d="M70,175 L130,175 L122,198 L78,198Z" fill="#7a5a3a"/>
 <rect x="68" y="153" width="64" height="24" rx="6" fill="#8a6a4a"/>
 <rect x="65" y="144" width="70" height="14" rx="5" fill="#9a7a5a"/>
@@ -1644,7 +1709,7 @@ S.hachi=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wid
 </svg>`;
 
 // ── ストック ──
-S.stock=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
+S.stock=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8f0ff"/>
 <line x1="100" y1="195" x2="100" y2="50" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="76" cy="172" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-20,76,172)"/>
 <ellipse cx="128" cy="158" rx="22" ry="8" fill="#4a9a35" transform="rotate(18,128,158)"/>
@@ -1688,7 +1753,7 @@ S.stock=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect wid
 </svg>`;
 
 // ── 汎用（切り花） ──
-S.default_kiri=`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/>
+S.default_kiri=`<svg viewBox="0 0 200 200" width="100%" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="200" fill="#f8fff8"/>
 <line x1="100" y1="195" x2="100" y2="115" stroke="#3a7a2a" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="76" cy="166" rx="24" ry="9" fill="#3d8a2a" transform="rotate(-22,76,166)"/>
 <ellipse cx="126" cy="154" rx="22" ry="8" fill="#4a9a35" transform="rotate(18,126,154)"/>
@@ -1957,9 +2022,247 @@ const FLOWERS = [
   {no:1200, name:'鉢物材料', cat:'鉢物'},
 ];
 
+
+
 // =====================================================================
-// アプリ状態
+// 花の写真（Wikipedia API 動的取得）
 // =====================================================================
+const photoCache = {};
+
+async function fetchWikiPhoto(wikiTitle, imgEl, creditEl) {
+  if (!wikiTitle) { imgEl.style.display='none'; return; }
+  if (photoCache[wikiTitle] !== undefined) {
+    const url = photoCache[wikiTitle];
+    if (url) {
+      imgEl.src = url;
+      imgEl.style.display = 'block';
+      const svgSlot = imgEl.parentElement.querySelector('div[id$="-slot"]');
+      if(svgSlot) svgSlot.style.display = 'none';
+      creditEl.textContent = '© Wikipedia CC BY-SA';
+      creditEl.style.display = 'block';
+    }
+    return;
+  }
+  try {
+    const url = `https://ja.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(wikiTitle)}&prop=pageimages&pithumbsize=400&format=json&origin=*`;
+    const res = await fetch(url);
+    const json = await res.json();
+    const page = Object.values(json.query.pages)[0];
+    if (page.thumbnail && page.thumbnail.source) {
+      photoCache[wikiTitle] = page.thumbnail.source;
+      imgEl.src = page.thumbnail.source;
+      imgEl.style.display = 'block';
+      const svgSlot = imgEl.parentElement.querySelector('div[id$="-slot"]');
+      if(svgSlot) svgSlot.style.display = 'none';
+      creditEl.textContent = '© Wikipedia CC BY-SA';
+      creditEl.style.display = 'block';
+    } else {
+      photoCache[wikiTitle] = null;
+      imgEl.style.display = 'none';
+    }
+  } catch(e) {
+    photoCache[wikiTitle] = null;
+    imgEl.style.display = 'none';
+  }
+}
+
+// =====================================================================
+// 花の特徴・ヒントデータ
+// =====================================================================
+const FLOWER_INFO = {
+  1:{hint:"コード帯1〜9はラン類。オンシジュームはパンジーに似た黄色い小花が群れ咲く。ブライダルやアレンジに多用。",season:"通年",wiki:"オンシジューム"},
+  2:{hint:"コード帯1〜9はラン類。カトレアは「ランの女王」。大輪で豪華な香り。胸元のコサージュに定番。",season:"通年",wiki:"カトレア"},
+  3:{hint:"コード帯1〜9はラン類。シンピジュームは寒さに強く正月需要が高い。",season:"冬〜春",wiki:"シンビジウム"},
+  5:{hint:"コード帯1〜9はラン類。デンファレはデンドロビウムの一種。小型で鮮やか。",season:"通年",wiki:"デンドロビウム"},
+  6:{hint:"コード帯1〜9はラン類。ファレノプシス（胡蝶蘭）。蝶が舞うような白い大輪花。贈答用最高峰。",season:"通年",wiki:"ファレノプシス"},
+  7:{hint:"コード帯1〜9はラン類。エビデンはデンドロビウム系のラン。",season:"通年",wiki:"デンドロビウム"},
+  8:{hint:"コード帯1〜9はラン類だが例外的にキク（ディスバット）。1茎1輪の大輪菊。",season:"通年",wiki:"キク"},
+  9:{hint:"コード帯1〜9はラン類。デンドロは竹のような茎に花を連ねる。",season:"通年",wiki:"デンドロビウム"},
+  10:{hint:"コード帯10〜14は菊類。コギクは小輪の菊。仏花の定番。",season:"通年",wiki:"キク"},
+  11:{hint:"コード帯10〜14は菊類。スプレーキクは1茎に複数輪咲く。アレンジに重宝。",season:"通年",wiki:"スプレーギク"},
+  12:{hint:"コード帯10〜14は菊類。シロキクは白い大輪菊。供花・仏花の主役。",season:"通年",wiki:"キク"},
+  13:{hint:"コード帯10〜14は菊類。キギクは黄色の大輪菊。長寿の象徴として慶事にも。",season:"通年",wiki:"キク"},
+  14:{hint:"コード帯10〜14は菊類。アカギクは赤い大輪菊。",season:"通年",wiki:"キク"},
+  15:{hint:"コード15はバラ。切り花の王様で流通量No.1。コロンビア・ケニア産が多い。",season:"通年",wiki:"バラ"},
+  16:{hint:"コード帯16〜19はカーネーション系。母の日の定番。エチオピア・コロンビア産が多い。",season:"通年",wiki:"カーネーション"},
+  17:{hint:"コード帯16〜19はカーネーション系。SPカーネーションは1茎に複数輪咲くスプレー咲き。",season:"通年",wiki:"カーネーション"},
+  18:{hint:"コード帯16〜19はカーネーション系。ミニカーネーションは小輪多花。",season:"通年",wiki:"カーネーション"},
+  19:{hint:"コード帯16〜19はカーネーション系。ダイアンサスはカーネーションの近縁種。",season:"通年",wiki:"ナデシコ"},
+  20:{hint:"コード帯20〜23はユリ類。テッポウユリは純白のラッパ形。卒業式・結婚式に定番。",season:"春〜初夏",wiki:"テッポウユリ"},
+  21:{hint:"コード帯20〜23はユリ類。オリエンタルユリは大輪で強い芳香。カサブランカが有名品種。",season:"夏",wiki:"ユリ"},
+  22:{hint:"コード帯20〜23はユリ類。アジアンティクは花粉が多い小〜中輪のユリ。",season:"春〜夏",wiki:"ユリ"},
+  23:{hint:"コード帯20〜23はユリ類。LAユリはロンギフローラムとアジアンティクの交配種。",season:"通年",wiki:"ユリ"},
+  24:{hint:"コード24はチューリップ。オランダが世界最大の産地。春の球根花の代表。",season:"春",wiki:"チューリップ"},
+  25:{hint:"コード25はグラジオラス。剣のような葉。下から順に咲き上がる。",season:"夏",wiki:"グラジオラス"},
+  26:{hint:"コード26はアイリス（菖蒲系）。ギリシャ語で虹の意味。垂れ花びらが特徴。",season:"春〜初夏",wiki:"アイリス"},
+  27:{hint:"コード27はフリージア。甘い芳香。南アフリカ原産。",season:"春",wiki:"フリージア"},
+  28:{hint:"コード28はスイセン。副花冠（カップ）が目印。正月花として人気。",season:"冬〜春",wiki:"スイセン"},
+  29:{hint:"コード29はアマリリス。大型の球根花。",season:"春〜夏",wiki:"アマリリス"},
+  30:{hint:"コード30はカラー（海芋）。白い仏炎苞が特徴。ブライダルに人気。",season:"春〜夏",wiki:"カラー_(植物)"},
+  31:{hint:"コード31はアリアム。ネギの仲間。球形の花が個性的。",season:"初夏",wiki:"アリウム"},
+  32:{hint:"コード32はアガパンサス。青紫の球形花序。南アフリカ原産。",season:"夏",wiki:"アガパンサス"},
+  33:{hint:"コード33はアルストロメリア。ユリに似た斑点模様。日持ちが良い。",season:"通年",wiki:"アルストロメリア"},
+  34:{hint:"コード34はショウブ（菖蒲）。端午の節句の花。アイリスの仲間。",season:"春〜初夏",wiki:"ハナショウブ"},
+  35:{hint:"コード35はカキツバタ。ハナショウブに似るが水辺に自生。",season:"春〜初夏",wiki:"カキツバタ"},
+  36:{hint:"コード36はリモニューム シヌアータ（スターチス）。ドライフラワーになりやすい。",season:"通年",wiki:"スターチス"},
+  37:{hint:"コード37はリモニューム HB。霞のような細かい花。アレンジの引き立て役。",season:"通年",wiki:"リモニウム"},
+  38:{hint:"コード38はアスター。秋の菊に似た花。エゾギクとも呼ぶ。",season:"秋",wiki:"エゾギク"},
+  39:{hint:"コード39はケイトウ（鶏頭）。炎のような形。秋の花。",season:"夏〜秋",wiki:"ケイトウ"},
+  40:{hint:"コード40はスイートピー。甘い香りが特徴。蝶々のような花姿。",season:"春",wiki:"スイートピー"},
+  41:{hint:"コード41はストック。縦に花が連なる。甘い芳香。",season:"冬〜春",wiki:"ストック_(植物)"},
+  42:{hint:"コード42はスナップ（金魚草）。唇形の花。触ると口が開く。",season:"冬〜春",wiki:"キンギョソウ"},
+  43:{hint:"コード43はガーベラ。南アフリカ原産。カラフルで丸い花形。",season:"通年",wiki:"ガーベラ"},
+  44:{hint:"コード44はデルフィニウム（大飛燕草）。青紫の穂状花。",season:"春〜初夏",wiki:"デルフィニウム"},
+  45:{hint:"コード45はコスモス。秋桜とも書く。細い花びら。秋の野花の代表。",season:"秋",wiki:"コスモス_(植物)"},
+  46:{hint:"コード46はリヤトリス。紫の穂状。上から下に咲き下がる珍しい花。",season:"夏",wiki:"リアトリス"},
+  47:{hint:"コード47はブバリア。白や赤の小花。コーヒーの仲間。",season:"秋〜冬",wiki:"ブバリア"},
+  48:{hint:"コード48はマーガレット。白い花びらと黄い中心。「好き・嫌い」占いの花。",season:"春",wiki:"マーガレット_(植物)"},
+  49:{hint:"コード49はアンスリウム。ハート形の赤い苞葉。熱帯植物。",season:"通年",wiki:"アンスリウム"},
+  50:{hint:"コード50はシャクヤク。「立てばシャクヤク」の言葉通り豪華な花姿。",season:"春〜初夏",wiki:"シャクヤク"},
+  51:{hint:"コード51はミヤコワスレ（都忘れ）。薄紫の可憐な花。",season:"春〜初夏",wiki:"ミヤコワスレ"},
+  52:{hint:"コード52はキキョウ（桔梗）。秋の七草のひとつ。紫の星形花。",season:"夏〜秋",wiki:"キキョウ"},
+  53:{hint:"コード53はダリア。メキシコ原産。大輪で多彩な色・形。",season:"夏〜秋",wiki:"ダリア"},
+  54:{hint:"コード54はリンドウ。秋の代表花。青紫の筒状花。岩手県が主産地。",season:"秋",wiki:"リンドウ"},
+  55:{hint:"コード55はリシアンサス（トルコキキョウ）。フリルのある大輪花。",season:"通年",wiki:"トルコギキョウ"},
+  56:{hint:"コード56はカスミソウ。霞のような白い小花。ブーケの添え花定番。",season:"通年",wiki:"カスミソウ"},
+  57:{hint:"コード57はナノハナ（菜の花）。春の訪れを告げる黄色い花。食用にもなる。",season:"冬〜春",wiki:"セイヨウアブラナ"},
+  58:{hint:"コード58はキンセンカ（カレンデュラ）。オレンジ・黄色の菊に似た花。",season:"冬〜春",wiki:"キンセンカ"},
+  59:{hint:"コード59はネイティブフラワー。オーストラリア産の個性的な花の総称。",season:"通年",wiki:"バンクシア"},
+  60:{hint:"コード60はサンタンカ。熱帯性の赤い小花が集まる。",season:"通年",wiki:"サンタンカ"},
+  61:{hint:"コード61はエリンジューム（ルリタマアザミ）。青銀色の球形花。ドライになる。",season:"夏〜秋",wiki:"エリンジウム"},
+  62:{hint:"コード62はカンパニュラ。鐘形の花。ベルフラワーとも。",season:"初夏",wiki:"カンパニュラ"},
+  63:{hint:"コード63はクジャクソウ。孔雀の羽のように広がる小花。アスターの仲間。",season:"秋",wiki:"クジャクアスター"},
+  64:{hint:"コード64はソリダスター。黄色い小花が霞状。ソリダゴとアスターの交配種。",season:"夏〜秋",wiki:"ソリダスター"},
+  65:{hint:"コード65はアネモネ・ラナン（ラナンキュラス含む）。紙のような薄い花びら。",season:"春",wiki:"ラナンキュラス"},
+  66:{hint:"コード66はレースフラワー。白い繊細な花。アレンジの名脇役。",season:"春〜初夏",wiki:"レースフラワー"},
+  67:{hint:"コード67はアコニタム（トリカブト）。青紫の兜形の花。毒草で有名。",season:"秋",wiki:"トリカブト"},
+  68:{hint:"コード68はスカビオサ（松虫草）。淡紫の丸い花。",season:"春〜秋",wiki:"マツムシソウ"},
+  69:{hint:"コード69はグロリオサ。炎のように反り返った花びら。ユリの仲間。",season:"夏",wiki:"グロリオサ"},
+  70:{hint:"コード70はストレリチア（極楽鳥花）。鳥のくちばし形。南アフリカ原産。",season:"通年",wiki:"ストレリチア"},
+  71:{hint:"コード71はヘリコニア。熱帯性。ストレリチアに近縁。",season:"通年",wiki:"ヘリコニア"},
+  72:{hint:"コード72はアスチルベ。羽毛状の花序。湿地を好む。",season:"初夏",wiki:"アスチルベ"},
+  73:{hint:"コード73はユーフォルビア。白い花に見えるのは苞。",season:"通年",wiki:"ユーフォルビア"},
+  74:{hint:"コード74はディスカス（シネンシス等）。",season:"通年",wiki:"ディアスシア"},
+  75:{hint:"コード75はイキシャ（イキシア）。ほっそりした茎に小花。",season:"春",wiki:"イキシア"},
+  76:{hint:"コード76はアザミ。トゲのある葉。紫の球形花。",season:"夏〜秋",wiki:"アザミ"},
+  77:{hint:"コード77はスミレ（ビオラ）。小さく可憐。春の花の代表。",season:"春",wiki:"スミレ"},
+  78:{hint:"コード78はポピー（ケシ）。薄紙のような花びら。赤・白・黄。",season:"春",wiki:"ヒナゲシ"},
+  79:{hint:"コード79はサンダーソニア。オレンジのランタン形の小花。南アフリカ原産。",season:"夏〜秋",wiki:"サンダーソニア"},
+  80:{hint:"コード80はニゲラ（黒種草）。糸状の苞に囲まれた花。実も観賞用に。",season:"春〜初夏",wiki:"ニゲラ"},
+  88:{hint:"コード88はクレマチス。つる性。テッセンとも呼ぶ。大輪のものも多い。",season:"春〜秋",wiki:"クレマチス"},
+  91:{hint:"コード91はエレムルス。砂漠のローソク草。長大な穂状花序。",season:"初夏",wiki:"エレムルス"},
+  92:{hint:"コード92はトリテリア（トリトニア）。青紫の球形花。",season:"初夏",wiki:"トリトニア"},
+  93:{hint:"コード93はボタン（牡丹）。「百花の王」。4〜5月が旬。",season:"春",wiki:"ボタン_(植物)"},
+  100:{hint:"コード100はオオニソガラム。白い星形の小花。「ベツレヘムの星」とも。",season:"春〜初夏",wiki:"オーニソガラム"},
+  110:{hint:"コード110はアマリリダセアエ（ヒガンバナ科総称）。",season:"秋",wiki:"ヒガンバナ科"},
+  130:{hint:"コード130はアネモネ。地中海原産。赤・白・紫など鮮やか。",season:"冬〜春",wiki:"アネモネ"},
+  160:{hint:"コード160はウイキョウ（フェンネル）。ハーブ。黄色い小花と芳香。",season:"夏",wiki:"フェンネル"},
+  190:{hint:"コード190はその他球根切り花の総称コード。",season:"季節による",wiki:""},
+  200:{hint:"コード200はヒヤシンス。甘い芳香が特徴。球根植物。春を告げる花。",season:"冬〜春",wiki:"ヒヤシンス"},
+  300:{hint:"コード300はセントーレア（矢車草）。青い放射状の花。",season:"春",wiki:"ヤグルマギク"},
+  350:{hint:"コード350はジンジャー。熱帯のショウガ科。白や赤の大きな花。",season:"夏〜秋",wiki:"ジンジャー_(植物)"},
+  360:{hint:"コード360はホオヅキ（鬼灯）。赤いちょうちん型の袋が特徴。お盆の供花。",season:"夏〜秋",wiki:"ホオズキ"},
+  390:{hint:"コード390はハス（蓮）。仏教の聖なる花。泥から美しく咲く。",season:"夏",wiki:"ハス"},
+  400:{hint:"コード400はその他草花の総称コード。",season:"季節による",wiki:""},
+  401:{hint:"コード401はヒマワリ。夏の太陽の花。向日性で太陽を追う。",season:"夏",wiki:"ヒマワリ"},
+  402:{hint:"コード402はユウギリソウ（夕霧草）。薄青紫の小花が霞状。",season:"夏〜秋",wiki:"トラケリウム"},
+  405:{hint:"コード405はマトリカリヤ。白い小菊に似た花。",season:"春〜初夏",wiki:"マトリカリア"},
+  406:{hint:"コード406はセンニチコウ（千日紅）。球形の花が長持ち。ドライになる。",season:"夏〜秋",wiki:"センニチコウ"},
+  407:{hint:"コード407はブプレリューム。黄緑の星形の苞。アレンジのグリーン材料。",season:"通年",wiki:"ブプレウルム"},
+  408:{hint:"コード408はオキシペタルム（ブルースター）。淡い水色の星形花。",season:"春〜秋",wiki:"ツルドラゴン"},
+  409:{hint:"コード409はクリスマスローズ。冬に咲く貴重な花。うつむいて咲く。",season:"冬〜春",wiki:"クリスマスローズ"},
+  410:{hint:"コード410はセンリョウ（千両）。正月の縁起物。赤い実が鮮やか。",season:"冬",wiki:"センリョウ"},
+  412:{hint:"コード412はカボチャ。ハロウィンの装飾に使う観賞用カボチャ。",season:"秋",wiki:"カボチャ"},
+  420:{hint:"コード420はオモト（万年青）。縁起植物。引越し・開業祝いに。",season:"通年",wiki:"オモト"},
+  500:{hint:"コード500〜は枝もの・グリーン類。500番台は樹木系の総称コード。",season:"季節による",wiki:""},
+  505:{hint:"コード505はユーカリ。シルバーグリーンの葉。コアラの食草。アロマにも。",season:"通年",wiki:"ユーカリ"},
+  510:{hint:"コード510はマツ。正月花材の定番。常緑で縁起が良い。",season:"通年",wiki:"マツ"},
+  520:{hint:"コード520はサクラ。日本を代表する花木。染井吉野が最多。",season:"春",wiki:"サクラ"},
+  522:{hint:"コード522はウメ。サクラより早く咲く。梅干しの実も成る。",season:"冬〜春",wiki:"ウメ"},
+  525:{hint:"コード525はモモ（桃）。ひな祭りの花。淡いピンク。",season:"春",wiki:"モモ"},
+  530:{hint:"コード530はボケ（木瓜）。赤い花が春に咲く落葉低木。",season:"春",wiki:"ボケ_(植物)"},
+  540:{hint:"コード540は柳類。しなやかな枝。アレンジで動きを出す。",season:"通年",wiki:"ヤナギ"},
+  550:{hint:"コード550は檜葉・杉類。正月飾りの定番グリーン。",season:"冬",wiki:"ヒノキ"},
+  560:{hint:"コード560はツツジ。春を彩る花木。サツキもツツジ科。",season:"春",wiki:"ツツジ"},
+  570:{hint:"コード570はアカシア（ミモザ）。黄色い球状の小花。3月8日の女性の日に贈る花。",season:"春",wiki:"ミモザ"},
+  575:{hint:"コード575はライラック。紫の小花が密集。甘い芳香。",season:"春",wiki:"ライラック"},
+  580:{hint:"コード580はアジサイ。梅雨の花。ガクアジサイが原種。",season:"初夏",wiki:"アジサイ"},
+  590:{hint:"コード590はヒペリカム。赤い実が可愛い。アレンジの実物材料。",season:"秋",wiki:"ヒペリカム"},
+  680:{hint:"コード680はタケ（竹）。正月花材。成長が早い。",season:"通年",wiki:"タケ"},
+  690:{hint:"コード690はサカキ（榊）。神事の定番。常緑の聖なる木。",season:"通年",wiki:"サカキ"},
+  691:{hint:"コード691はツクリサカキ。加工したサカキ。",season:"通年",wiki:"サカキ"},
+  692:{hint:"コード692はコウジンマツ。松の一種。",season:"通年",wiki:"マツ"},
+  695:{hint:"コード695はシキビ（樒）。仏事の供花。強い芳香。",season:"通年",wiki:"シキミ"},
+  700:{hint:"コード700はハモノ（葉物）。観葉植物系の葉材の総称。",season:"通年",wiki:""},
+  790:{hint:"コード790はハショウブ。花菖蒲。水辺に咲く紫の花。",season:"初夏",wiki:"ハナショウブ"},
+  800:{hint:"コード800は加工品。リース・アレンジメント等の完成品。",season:"通年",wiki:""},
+  850:{hint:"コード850はドライフラワー。乾燥させた花材。",season:"通年",wiki:""},
+  900:{hint:"コード900は雑口。分類外の品目。",season:"通年",wiki:""},
+  999:{hint:"コード999は備考欄として使う特殊コード。",season:"通年",wiki:""},
+  1100:{hint:"コード帯1100〜1109は鉢物ラン類。1100はヨウラン（洋ラン）の総称コード。",season:"通年",wiki:"ラン科"},
+  1101:{hint:"コード帯1100〜1109は鉢物ラン類。1101はカトレア鉢。",season:"通年",wiki:"カトレア"},
+  1102:{hint:"コード帯1100〜1109は鉢物ラン類。1102はファレノ（胡蝶蘭）鉢。贈答用最高峰。",season:"通年",wiki:"ファレノプシス"},
+  1103:{hint:"コード帯1100〜1109は鉢物ラン類。1103はシンピジューム鉢。正月需要大。",season:"冬〜春",wiki:"シンビジウム"},
+  1104:{hint:"コード帯1100〜1109は鉢物ラン類。1104はデンドロ鉢。",season:"通年",wiki:"デンドロビウム"},
+  1105:{hint:"コード帯1100〜1109は鉢物ラン類。1105はオンシジューム鉢。",season:"通年",wiki:"オンシジューム"},
+  1106:{hint:"コード帯1100〜1109は鉢物ラン類。1106はミルトニア鉢。パンジーに似た顔。",season:"通年",wiki:"ミルトニア"},
+  1107:{hint:"コード帯1100〜1109は鉢物ラン類。1107はフォーミー鉢。",season:"通年",wiki:"ラン科"},
+  1108:{hint:"コード帯1100〜1109は鉢物ラン類。1108はバンダ鉢。青い花が美しい。",season:"通年",wiki:"バンダ_(植物)"},
+  1109:{hint:"コード帯1100〜1109は鉢物ラン類。1109はデンファレ鉢。",season:"通年",wiki:"デンドロビウム"},
+  1120:{hint:"コード1120はアナナス（ブロメリア）鉢。パイナップルの仲間。",season:"通年",wiki:"ブロメリア科"},
+  1121:{hint:"コード帯1121〜1130は鉢物観葉。1121はディフェンバキア。大型観葉。",season:"通年",wiki:"ディフェンバキア"},
+  1123:{hint:"コード帯1121〜1130は鉢物観葉。1123はドラセナ。リボン状の葉が特徴。",season:"通年",wiki:"ドラセナ"},
+  1125:{hint:"コード帯1121〜1130は鉢物観葉。1125はフィカス（ゴムノキ等）。",season:"通年",wiki:"フィカス"},
+  1127:{hint:"コード帯1121〜1130は鉢物観葉。1127はフィロデンドロン。ハート形の葉。",season:"通年",wiki:"フィロデンドロン"},
+  1130:{hint:"コード帯1121〜1130は鉢物観葉。1130はヤシ類。南国のシンボル。",season:"通年",wiki:"ヤシ科"},
+  1133:{hint:"コード1133はシダ。胞子で増える。日陰でも育つ。",season:"通年",wiki:"シダ植物"},
+  1135:{hint:"コード1135はカンシュウチク（寒竹）鉢。",season:"通年",wiki:"タケ"},
+  1136:{hint:"コード1136はサボテン・多肉植物。水やり不要で人気。",season:"通年",wiki:"サボテン"},
+  1137:{hint:"コード1137はカクタス（サボテン）。トゲが特徴。",season:"通年",wiki:"サボテン"},
+  1140:{hint:"コード1140はその他観葉植物の総称コード。",season:"通年",wiki:""},
+  1141:{hint:"コード1141はスパティフィラム。白い仏炎苞。陰でも育つ。",season:"通年",wiki:"スパティフィラム"},
+  1142:{hint:"コード1142はシェフレラ（カポック）。放射状の葉。",season:"通年",wiki:"シェフレラ"},
+  1145:{hint:"コード1145はアンスリウム鉢。ハート形の苞葉。",season:"通年",wiki:"アンスリウム"},
+  1150:{hint:"コード帯1150〜1159は実付き物・盆栽類。",season:"季節による",wiki:""},
+  1151:{hint:"コード1151はツバキ（椿）鉢。冬〜春の花木。",season:"冬〜春",wiki:"ツバキ"},
+  1152:{hint:"コード1152はボケ（木瓜）鉢。",season:"春",wiki:"ボケ_(植物)"},
+  1153:{hint:"コード1153はウメ（梅）鉢。正月・春先の定番。",season:"冬〜春",wiki:"ウメ"},
+  1156:{hint:"コード1156はツツジ鉢。",season:"春",wiki:"ツツジ"},
+  1157:{hint:"コード1157はアジサイ鉢。梅雨の贈り物定番。",season:"初夏",wiki:"アジサイ"},
+  1159:{hint:"コード1159はシャクナゲ（石楠花）鉢。高貴な大輪花。",season:"春",wiki:"シャクナゲ"},
+  1161:{hint:"コード1161はハイビスカス鉢。南国の花。沖縄の花にも指定。",season:"夏",wiki:"ハイビスカス"},
+  1162:{hint:"コード1162はバラ鉢。",season:"通年",wiki:"バラ"},
+  1163:{hint:"コード1163はブーゲンビレア鉢。赤・ピンクの苞葉が鮮やか。",season:"通年",wiki:"ブーゲンビリア"},
+  1164:{hint:"コード1164はカーネーション鉢。",season:"通年",wiki:"カーネーション"},
+  1165:{hint:"コード1165はクレマチス鉢。",season:"春〜秋",wiki:"クレマチス"},
+  1166:{hint:"コード1166はボタン（牡丹）鉢。百花の王。",season:"春",wiki:"ボタン_(植物)"},
+  1170:{hint:"コード1170はその他草花鉢の総称コード。",season:"季節による",wiki:""},
+  1171:{hint:"コード1171はシクラメン鉢。冬の贈り物の王様。反り返った花びら。",season:"冬",wiki:"シクラメン"},
+  1172:{hint:"コード1172は球根類鉢。チューリップ等の球根植物鉢。",season:"春",wiki:"球根植物"},
+  1173:{hint:"コード1173はインパーチエンス（インパチェンス）鉢。夏の定番花壇苗。",season:"夏",wiki:"インパチェンス"},
+  1174:{hint:"コード1174はイワタバコ（岩煙草）鉢。和の雰囲気。",season:"夏",wiki:"イワタバコ"},
+  1175:{hint:"コード1175はキク鉢。",season:"通年",wiki:"キク"},
+  1176:{hint:"コード1176はペチュニア鉢。ラッパ形の花。春〜秋に長く咲く。",season:"春〜秋",wiki:"ペチュニア"},
+  1177:{hint:"コード1177はサイネリア（シネラリア）鉢。冬の青い花。",season:"冬〜春",wiki:"シネラリア"},
+  1179:{hint:"コード1179はプリムラ鉢。冬〜春の定番ポット花。",season:"冬〜春",wiki:"サクラソウ"},
+  1180:{hint:"コード1180はベゴニア鉢。四季咲きで長く楽しめる。",season:"通年",wiki:"ベゴニア"},
+  1181:{hint:"コード1181はペラルゴニウム（ゼラニウム）鉢。",season:"春〜夏",wiki:"ペラルゴニウム"},
+  1182:{hint:"コード1182はポインセチア鉢。クリスマスの赤い花。赤い部分は苞葉。",season:"冬",wiki:"ポインセチア"},
+  1183:{hint:"コード1183はポインセチア（苗）。",season:"秋〜冬",wiki:"ポインセチア"},
+  1185:{hint:"コード1185はカンヨウ（観用植物）鉢。",season:"通年",wiki:""},
+  1190:{hint:"コード1190はパンジー鉢。冬から春の花壇の主役。",season:"冬〜春",wiki:"パンジー"},
+  1191:{hint:"コード1191はペチュニア（苗）。",season:"春〜夏",wiki:"ペチュニア"},
+  1192:{hint:"コード1192はニチニチソウ（日々草）鉢。夏の酷暑に強い。",season:"夏〜秋",wiki:"ニチニチソウ"},
+  1194:{hint:"コード1194はシクラメン（別品種・サイズ）鉢。",season:"冬",wiki:"シクラメン"},
+  1195:{hint:"コード1195はカーネーション（鉢・苗）。",season:"春〜夏",wiki:"カーネーション"},
+  1196:{hint:"コード1196は野菜苗。トマト・キュウリ等の苗。",season:"春",wiki:""},
+  1197:{hint:"コード1197は苗。草花苗の総称コード。",season:"季節による",wiki:""},
+  1198:{hint:"コード1198は花木根巻物。植え付け用の花木。",season:"季節による",wiki:""},
+  1199:{hint:"コード1199は球根・種苗。",season:"季節による",wiki:""},
+  1200:{hint:"コード1200は鉢物材料の総称コード。",season:"通年",wiki:""},
+};
+
+
 function getSVG(no){ return S[svgMap[no]] || S.default_kiri; }
 function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
@@ -1967,13 +2270,17 @@ function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=M
 const SET_SIZE = 20;
 let filterMode = 'all';
 let allFlowers = FLOWERS;
-let setResults  = {};   // { setIdx: { ok, ng, passed } }
+let setResults = {};
 
 // テスト状態
-let currentSetIdx = -1; // -1 = 全問テスト
+let currentSetIdx = -1;
 let queue = [], current = null, inputVal = '', scoreOk = 0, scoreNg = 0;
-let setFlowers = []; // 今のセットの全花
+let setFlowers = [];
 let isAllTest = false;
+let wrongList = []; // 間違えた花のリスト
+let isReviewRound = false; // 復習ラウンド中フラグ
+let currentQuizMode = 'forward'; // 'forward' | 'reverse'
+let choiceAnswered = false; // 選択肢問題回答済みフラグ
 
 // 学習フェーズ状態
 let learnList = [], learnIdx = 0;
@@ -1990,7 +2297,7 @@ function setFilter(mode){
   buildSetGrid();
 }
 
-// ── セット選択画面 ────────────────────────────────
+// ── セット選択 ────────────────────────────────────
 function showSelect(){
   showScreen('select');
   buildSetGrid();
@@ -2001,37 +2308,32 @@ function showSelect(){
 function buildSetGrid(){
   const grid = document.getElementById('set-grid');
   const sets = makeSets();
-  const total = sets.length;
   let passedCount = 0;
   grid.innerHTML = sets.map((s,i)=>{
-    const res = setResults[i] || {};
-    const passed = res.passed || false;
+    const res = setResults[i]||{};
+    const passed = res.passed||false;
     if(passed) passedCount++;
     const pct = (res.ok!==undefined) ? Math.round(res.ok/(res.ok+res.ng)*100) : null;
-    const locked = i>0 && !(setResults[i-1]||{}).passed;
-    const cls = passed?'set-card passed': locked?'set-card locked':'set-card';
-    const badge = passed?'🎖':'';
+    const locked = false; // セット自由選択
+    const cls = passed?'set-card passed':'set-card';
     const pctStr = pct!==null ? `<span class="set-pct ${passed?'ok':'ng'}">${pct}%</span>` : '';
-    const lockIcon = locked ? '<div class="lock-icon">🔒</div>' : '';
-    return `<div class="${cls}" onclick="${locked?'':'selectSet('+i+')'}" data-set="${i}">
+    const lockIcon = '';
+    return `<div class="${cls}" onclick="selectSet(${i})" data-set="${i}">
       ${lockIcon}
-      <div class="set-num">セット ${i+1} ${badge}</div>
+      <div class="set-num">セット ${i+1} ${passed?'🎖':''}</div>
       <div class="set-range">${s[0].name} 〜 ${s[s.length-1].name}</div>
       <div class="set-count">${s.length}問</div>
       ${pctStr}
     </div>`;
   }).join('');
-  // 全体進捗
-  const pct = total ? Math.round(passedCount/total*100) : 0;
+  const pct = sets.length ? Math.round(passedCount/sets.length*100) : 0;
   document.getElementById('pf').style.width = pct+'%';
-  document.getElementById('pt').textContent = passedCount+'/'+total+' セット合格';
+  document.getElementById('pt').textContent = passedCount+'/'+sets.length+' セット合格';
 }
 
 function makeSets(){
   const sets = [];
-  for(let i=0;i<allFlowers.length;i+=SET_SIZE){
-    sets.push(allFlowers.slice(i, i+SET_SIZE));
-  }
+  for(let i=0;i<allFlowers.length;i+=SET_SIZE) sets.push(allFlowers.slice(i,i+SET_SIZE));
   return sets;
 }
 
@@ -2052,22 +2354,31 @@ function startLearnPhase(){
 
 function renderLearnCard(){
   const f = learnList[learnIdx];
-  document.getElementById('learn-img').innerHTML = getSVG(f.no);
+  // SVG
+  const learnSvgSlot = document.getElementById('learn-svg-slot');
+  learnSvgSlot.innerHTML = getSVG(f.no);
+  learnSvgSlot.style.display = '';  // SVGを毎回リセット表示
+  // 写真
+  const photoEl = document.getElementById('learn-photo');
+  const creditEl = document.getElementById('learn-photo-credit');
+  photoEl.style.display = 'none';
+  creditEl.style.display = 'none';
+  const info = FLOWER_INFO[f.no]||{};
+  if(info.wiki) fetchWikiPhoto(info.wiki, photoEl, creditEl);
+
   document.getElementById('learn-name').textContent = f.name;
   document.getElementById('learn-cat').textContent = f.cat;
   document.getElementById('learn-code').textContent = f.no;
   document.getElementById('learn-prog').textContent = (learnIdx+1)+' / '+learnList.length;
+  document.getElementById('learn-hint').textContent = info.hint || '';
+  document.getElementById('learn-season').innerHTML = info.season ? '🌱 '+info.season : '';
   document.getElementById('btn-lprev').disabled = (learnIdx===0);
-  document.getElementById('btn-lnext').textContent = learnIdx===learnList.length-1 ? '✏️ テストへ' : '次へ →';
+  document.getElementById('btn-lnext').textContent = learnIdx===learnList.length-1 ? 'テストへ →' : '次へ →';
 }
 
 function learnNext(){
-  if(learnIdx < learnList.length-1){
-    learnIdx++;
-    renderLearnCard();
-  } else {
-    startSetTest();
-  }
+  if(learnIdx < learnList.length-1){ learnIdx++; renderLearnCard(); }
+  else startSetTest();
 }
 function learnPrev(){
   if(learnIdx>0){ learnIdx--; renderLearnCard(); }
@@ -2075,9 +2386,14 @@ function learnPrev(){
 
 // ── テストフェーズ ────────────────────────────────
 function startSetTest(){
+  // 通常→逆→復習 の3ラウンドを混在させる
+  // 通常ラウンド：花名→コード入力（forward）
+  // 逆ラウンド：コード→花名選択（reverse）は奇数問に挿入
+  isReviewRound = false;
+  wrongList = [];
   queue = shuffle([...setFlowers]);
   scoreOk=0; scoreNg=0; inputVal='';
-  const lbl = `セット ${currentSetIdx+1} テスト`;
+  const lbl = isAllTest ? '全問テスト' : `セット ${currentSetIdx+1} テスト`;
   document.getElementById('set-label-bar').textContent = lbl;
   document.getElementById('set-label-bar-r').textContent = lbl;
   updateScore();
@@ -2089,34 +2405,117 @@ function startAllTest(){
   currentSetIdx = -1;
   isAllTest = true;
   setFlowers = allFlowers;
-  queue = shuffle([...allFlowers]);
-  scoreOk=0; scoreNg=0; inputVal='';
-  document.getElementById('set-label-bar').textContent = '全問テストモード';
-  document.getElementById('set-label-bar-r').textContent = '全問テストモード';
-  updateScore();
-  showScreen('q');
-  nextQ();
+  startSetTest();
 }
 
 function nextQ(){
-  if(queue.length===0){ showDone(); return; }
-  current=queue.shift(); inputVal='';
-  renderQ(); showScreen('q');
+  if(queue.length===0){
+    // 復習ラウンドがあるか
+    if(!isReviewRound && wrongList.length>0){
+      startReviewRound();
+    } else {
+      showDone();
+    }
+    return;
+  }
+  current = queue.shift();
+  inputVal = '';
+  choiceAnswered = false;
+  // 問題モード決定：3問に1問は逆問題（reverse）
+  const questionNum = setFlowers.length - queue.length;
+  currentQuizMode = (questionNum % 3 === 0) ? 'reverse' : 'forward';
+  if(isReviewRound) currentQuizMode = 'forward'; // 復習は通常
+  renderQ();
+  showScreen('q');
+}
+
+function startReviewRound(){
+  isReviewRound = true;
+  // wrongListをシャッフルして再出題
+  queue = shuffle([...wrongList]);
+  wrongList = [];
+  const lbl = (isAllTest ? '全問テスト' : `セット ${currentSetIdx+1}`)+' — 🔄 復習ラウンド';
+  document.getElementById('set-label-bar').textContent = lbl;
+  document.getElementById('set-label-bar-r').textContent = lbl;
+  nextQ();
 }
 
 function renderQ(){
-  document.getElementById('fn').textContent = current.name;
-  document.getElementById('fc').textContent = current.cat;
-  document.getElementById('img-wrap').innerHTML = getSVG(current.no);
-  updateInputDisp(); updateProgress();
+  const info = FLOWER_INFO[current.no]||{};
+  // ヒント表示
+  const hintEl = document.getElementById('q-hint');
+  if(info.hint){
+    document.getElementById('q-hint-text').textContent = info.hint;
+    document.getElementById('q-hint-season').textContent = info.season ? '🌱 旬：'+info.season : '';
+    hintEl.style.display='block';
+  } else {
+    hintEl.style.display='none';
+  }
+
+  if(currentQuizMode === 'forward'){
+    // 花名・画像を見せてコードを入力
+    document.getElementById('q-forward').style.display='block';
+    document.getElementById('q-reverse').style.display='none';
+    document.getElementById('q-input-area').style.display='block';
+    document.getElementById('q-choices-area').style.display='none';
+    document.getElementById('fn').textContent = current.name;
+    document.getElementById('fc').textContent = current.cat;
+    // SVG
+    const qSvgSlot = document.getElementById('q-svg-slot');
+    qSvgSlot.innerHTML = getSVG(current.no);
+    qSvgSlot.style.display = '';  // SVGを毎回リセット表示
+    // 写真
+    const photoEl = document.getElementById('q-photo');
+    const creditEl = document.getElementById('q-photo-credit');
+    photoEl.style.display='none'; creditEl.style.display='none';
+    if(info.wiki) fetchWikiPhoto(info.wiki, photoEl, creditEl);
+    updateInputDisp();
+  } else {
+    // コードを見せて花名を選択
+    document.getElementById('q-forward').style.display='none';
+    document.getElementById('q-reverse').style.display='block';
+    document.getElementById('q-input-area').style.display='none';
+    document.getElementById('q-choices-area').style.display='block';
+    document.getElementById('rq-code').textContent = current.no;
+    buildChoices();
+  }
+  updateProgress();
+}
+
+function buildChoices(){
+  // 正解＋3つのダミー選択肢
+  const pool = allFlowers.filter(f=>f.no!==current.no);
+  const dummies = shuffle(pool).slice(0,3);
+  const choices = shuffle([current, ...dummies]);
+  const grid = document.getElementById('choices-grid');
+  grid.innerHTML = choices.map(f=>
+    `<button class="choice-btn" onclick="checkChoice(${f.no})">${f.name}</button>`
+  ).join('');
+}
+
+function checkChoice(selectedNo){
+  if(choiceAnswered) return;
+  choiceAnswered = true;
+  const ok = selectedNo === current.no;
+  if(ok) scoreOk++; else { scoreNg++; wrongList.push(current); }
+  // 視覚フィードバック
+  document.querySelectorAll('.choice-btn').forEach(btn=>{
+    btn.disabled = true;
+    if(parseInt(btn.getAttribute('onclick').replace('checkChoice(','').replace(')','')) === current.no){
+      btn.classList.add('correct');
+    } else if(parseInt(btn.getAttribute('onclick').replace('checkChoice(','').replace(')','')) === selectedNo && !ok){
+      btn.classList.add('wrong');
+    }
+  });
+  setTimeout(()=>{ renderResult(ok); showScreen('r'); }, 700);
 }
 
 function updateProgress(){
-  const total = setFlowers.length;
-  const done  = total - queue.length;
-  const pct   = total ? (done/total*100) : 0;
+  const totalInRound = isReviewRound ? (wrongList.length + queue.length + 1) : setFlowers.length;
+  const done = setFlowers.length - queue.length - (isReviewRound ? 0 : 0);
+  const pct = totalInRound ? ((totalInRound - queue.length)/totalInRound*100) : 0;
   document.getElementById('pf').style.width = pct+'%';
-  document.getElementById('pt').textContent = done+'/'+total;
+  document.getElementById('pt').textContent = (totalInRound-queue.length)+'/'+totalInRound;
 }
 
 function updateInputDisp(){
@@ -2132,7 +2531,7 @@ function pb(){ if(!inputVal.length)return; inputVal=inputVal.slice(0,-1); update
 function checkAns(){
   if(!current||!inputVal)return;
   const ok = parseInt(inputVal,10)===current.no;
-  if(ok) scoreOk++; else scoreNg++;
+  if(ok) scoreOk++; else { scoreNg++; wrongList.push(current); }
   renderResult(ok); showScreen('r');
 }
 
@@ -2141,18 +2540,38 @@ function renderResult(ok){
   const lbl=document.getElementById('rl');
   lbl.textContent = ok?'正　解':'不正解';
   lbl.className = 'result-label '+(ok?'ok':'ng');
-  document.getElementById('ri').innerHTML = getSVG(current.no);
+  // 結果画像
+  const ri = document.getElementById('ri');
+  ri.innerHTML = getSVG(current.no);
+  const info = FLOWER_INFO[current.no]||{};
+  {
+    const img = document.createElement('img');
+    img.style.cssText='width:100%;height:100%;object-fit:cover;display:none';
+    const credit = document.createElement('span');
+    credit.style.cssText='position:absolute;bottom:2px;right:4px;font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.3);padding:1px 4px;border-radius:3px;display:none';
+    ri.style.position='relative';
+    ri.appendChild(img); ri.appendChild(credit);
+    if(info.wiki) fetchWikiPhoto(info.wiki, img, credit);
+  }
   const det=document.getElementById('rd');
+  const modeTag = currentQuizMode==='reverse'
+    ? '<span class="quiz-mode-badge reverse">コード→名前</span>'
+    : isReviewRound
+    ? '<span class="quiz-mode-badge review">🔄 復習</span>'
+    : '<span class="quiz-mode-badge forward">名前→コード</span>';
   if(ok){
-    det.innerHTML=`<div class="r-name">${current.name}</div>
+    det.innerHTML=`<div class="r-name">${current.name} ${modeTag}</div>
       <div style="margin-top:4px;font-size:.75rem;color:var(--text-sub)">${current.cat}</div>
-      <div style="margin-top:10px;">コード番号 <span class="r-code">${current.no}</span></div>`;
+      <div style="margin-top:8px;">コード番号 <span class="r-code">${current.no}</span></div>`;
   } else {
-    det.innerHTML=`<div class="r-name">${current.name}</div>
+    det.innerHTML=`<div class="r-name">${current.name} ${modeTag}</div>
       <div style="margin-top:4px;font-size:.75rem;color:var(--text-sub)">${current.cat}</div>
-      <div class="r-ans-ng" style="margin-top:10px;">あなたの回答：${inputVal}</div>
-      <div style="margin-top:5px;font-size:.85rem;color:var(--text-sub)">正解のコード</div>
+      <div class="r-ans-ng" style="margin-top:8px;">${currentQuizMode==='forward'?'あなたの回答：'+inputVal:''}</div>
+      <div style="margin-top:4px;font-size:.82rem;color:var(--text-sub)">正解のコード</div>
       <div class="r-correct-code">${current.no}</div>`;
+  }
+  if(info.hint){
+    det.innerHTML += `<div style="margin-top:8px;padding:7px 10px;background:var(--surface2);border-radius:8px;font-size:.72rem;color:var(--text-sub);line-height:1.6;border-left:3px solid var(--accent2)">${info.hint}</div>`;
   }
   updateScore();
 }
@@ -2166,49 +2585,42 @@ function updateScore(){
 function showDone(){
   const tot=scoreOk+scoreNg, pct=tot?Math.round(scoreOk/tot*100):0;
   const passed = pct>=80;
-
-  // セット結果を記録
   if(!isAllTest && currentSetIdx>=0){
-    setResults[currentSetIdx] = { ok:scoreOk, ng:scoreNg, passed };
-    // 次のセットを自動解放（何もしなくてもbuildSetGridで解放される）
+    setResults[currentSetIdx] = {ok:scoreOk, ng:scoreNg, passed};
   }
-
-  document.getElementById('done-em').textContent = passed ? '🎖' : (pct>=60?'😊':'💪');
-  document.getElementById('done-title').textContent = isAllTest ? '全問テスト完了！' : `セット ${currentSetIdx+1} 完了！`;
+  document.getElementById('done-em').textContent = passed?'🎖': pct>=60?'😊':'💪';
+  document.getElementById('done-title').textContent = isAllTest?'全問テスト完了！':`セット ${currentSetIdx+1} 完了！`;
   document.getElementById('ds').textContent = `${tot}問中 ${scoreOk}問正解（${pct}%）`;
-
   const passEl = document.getElementById('done-pass');
   if(isAllTest){
     passEl.textContent='';
   } else if(passed){
     passEl.innerHTML='<span class="pass-badge">🎖 合格！次のセットが解放されました</span>';
   } else {
-    passEl.innerHTML=`<span class="fail-badge">合格ライン80%まであと${80-pct}%<br>もう一度チャレンジしてみましょう</span>`;
+    passEl.innerHTML=`<span class="fail-badge">合格ライン80%まであと${80-pct}%。<br>再学習してもう一度チャレンジ！</span>`;
   }
-
   document.getElementById('pf').style.width='100%';
   document.getElementById('pt').textContent=tot+'/'+tot;
   showScreen('done');
 }
 
 function retrySet(){
-  if(isAllTest) startAllTest();
-  else startSetTest();
+  if(isAllTest) startAllTest(); else startSetTest();
 }
 
 function showScreen(s){
-  ['select','learn','q','r','done'].forEach(id=>{
-    const el=document.getElementById(id==='select'?'s-select':id==='learn'?'s-learn':id==='q'?'sq':id==='r'?'sr':'sd');
-    if(el) el.style.display = s===id?'flex':'none';
+  const map = {select:'s-select', learn:'s-learn', q:'sq', r:'sr', done:'sd'};
+  Object.keys(map).forEach(k=>{
+    document.getElementById(map[k]).style.display = (s===k)?'flex':'none';
   });
 }
 
-// キーボード対応
+// キーボード操作
 document.addEventListener('keydown',e=>{
-  const isQ=document.getElementById('sq').style.display!=='none';
-  const isR=document.getElementById('sr').style.display!=='none';
-  const isL=document.getElementById('s-learn').style.display!=='none';
-  if(isQ){
+  const isQ = document.getElementById('sq').style.display!=='none';
+  const isR = document.getElementById('sr').style.display!=='none';
+  const isL = document.getElementById('s-learn').style.display!=='none';
+  if(isQ && currentQuizMode==='forward'){
     if(e.key>='0'&&e.key<='9') pn(e.key);
     else if(e.key==='Backspace') pb();
     else if(e.key==='Enter') checkAns();
